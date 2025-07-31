@@ -13,9 +13,11 @@ export default function EmailModal({ formData, selectedTemplate, onClose }: Emai
   const [emailData, setEmailData] = useState({
     to: formData.customerEmail || '',
     subject: `Offert ${formData.quoteNumber} från ${formData.companyName}`,
-    message: `Hej ${formData.customerName || 'kund'},
+         message: `Hej ${formData.customerName || 'kund'},
 
-Tack för ditt intresse! Bifogat finner du vår offert ${formData.quoteNumber}.
+Tack för ditt intresse! Vi har skapat en offert för dig (${formData.quoteNumber}).
+
+Offerten kan laddas ner från vår webbplats eller skickas separat.
 
 Vid frågor är du välkommen att kontakta oss.
 
@@ -181,14 +183,14 @@ ${formData.companyName}`
         attachment_length: pdfBase64 ? pdfBase64.length : 0
       });
 
-      // Skicka e-post
+      // Skicka e-post utan attachment först (EmailJS har begränsningar med attachments)
       const result = await emailjs.send("service_0blfi6h", "template_5t6p3nh", {
         to_email: emailData.to,
         subject: emailData.subject,
         message: emailData.message,
         from_name: formData.companyName,
-        quote_number: formData.quoteNumber,
-        attachment: pdfBase64
+        quote_number: formData.quoteNumber
+        // attachment: pdfBase64 - EmailJS har problem med stora attachments
       });
 
       console.log('EmailJS result:', result);
@@ -324,11 +326,11 @@ ${formData.companyName}`
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-blue-700">
-                  Offerten kommer att bifogas som PDF-fil automatiskt.
-                </p>
-              </div>
+                             <div className="ml-3">
+                 <p className="text-sm text-blue-700">
+                   E-postmeddelandet skickas utan PDF-bilaga. PDF:en kan laddas ner separat.
+                 </p>
+               </div>
             </div>
           </div>
         </div>
