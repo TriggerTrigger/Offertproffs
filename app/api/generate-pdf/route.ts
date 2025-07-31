@@ -7,6 +7,7 @@ export async function POST(req: Request) {
 
     console.log('Received formData:', Object.keys(formData));
     console.log('Selected template:', selectedTemplate);
+    console.log('Full formData:', JSON.stringify(formData, null, 2));
 
     // Skapa HTML för offerten baserat på mall - samma som förhandsvisningen
     let html = '';
@@ -165,18 +166,20 @@ export async function POST(req: Request) {
       <body>
         <!-- Header -->
         <div class="header">
-          <div class="company-info">
-            <h1>${formData.companyName || 'Företagsnamn'}</h1>
-            <div>
-              ${(formData.companyStreet || formData.companyPostalCode || formData.companyCity) ? 
-                `<p>${[formData.companyStreet, formData.companyPostalCode, formData.companyCity].filter(Boolean).join(', ')}</p>` : ''
-              }
-              ${formData.companyPhone ? `<p>Tel: ${formData.companyPhone}</p>` : ''}
-              ${formData.companyEmail ? `<p>E-post: ${formData.companyEmail}</p>` : ''}
-              ${formData.companyOrgNr ? `<p>Org.nr: ${formData.companyOrgNr}</p>` : ''}
-              ${formData.companyVatNr ? `<p>Momsnr: ${formData.companyVatNr}</p>` : ''}
-            </div>
-          </div>
+                     <div class="company-info">
+             <h1>${formData.companyName || 'Företagsnamn'}</h1>
+             <div>
+               ${(formData.companyStreet || formData.companyPostalCode || formData.companyCity) ? 
+                 `<p>${[formData.companyStreet, formData.companyPostalCode, formData.companyCity].filter(Boolean).join(', ')}</p>` : ''
+               }
+               ${formData.companyPhone ? `<p>Tel: ${formData.companyPhone}</p>` : ''}
+               ${formData.companyEmail ? `<p>E-post: ${formData.companyEmail}</p>` : ''}
+               ${formData.companyOrgNr ? `<p>Org.nr: ${formData.companyOrgNr}</p>` : ''}
+               ${formData.companyVatNr ? `<p>Momsnr: ${formData.companyVatNr}</p>` : ''}
+               ${formData.companyWebsite ? `<p>Webbplats: ${formData.companyWebsite}</p>` : ''}
+               ${formData.companyBankAccount ? `<p>Bankkonto: ${formData.companyBankAccount}</p>` : ''}
+             </div>
+           </div>
           <div class="offer-info">
             <h2>OFFERT</h2>
             <p>Nr: ${formData.quoteNumber || 'OFF-33'}</p>
@@ -186,19 +189,21 @@ export async function POST(req: Request) {
           </div>
         </div>
 
-        <!-- Customer Info -->
-        <div class="customer-section">
-          <h3>Till:</h3>
-          <div>
-            ${formData.customerCompany ? `<p style="font-weight: bold;">${formData.customerCompany}</p>` : ''}
-            ${formData.customerName ? `<p>${formData.customerCompany ? 'Att: ' : ''}${formData.customerName}</p>` : ''}
-            ${(formData.customerStreet || formData.customerPostalCode || formData.customerCity) ? 
-              `<p>${[formData.customerStreet, formData.customerPostalCode, formData.customerCity].filter(Boolean).join(', ')}</p>` : ''
-            }
-            ${formData.customerEmail ? `<p>E-post: ${formData.customerEmail}</p>` : ''}
-            ${formData.customerPhone ? `<p>Tel: ${formData.customerPhone}</p>` : ''}
-          </div>
-        </div>
+                 <!-- Customer Info -->
+         <div class="customer-section">
+           <h3>Till:</h3>
+           <div>
+             ${formData.customerCompany ? `<p style="font-weight: bold;">${formData.customerCompany}</p>` : ''}
+             ${formData.customerName ? `<p>${formData.customerCompany ? 'Att: ' : ''}${formData.customerName}</p>` : ''}
+             ${(formData.customerStreet || formData.customerPostalCode || formData.customerCity) ? 
+               `<p>${[formData.customerStreet, formData.customerPostalCode, formData.customerCity].filter(Boolean).join(', ')}</p>` : ''
+             }
+             ${formData.customerEmail ? `<p>E-post: ${formData.customerEmail}</p>` : ''}
+             ${formData.customerPhone ? `<p>Tel: ${formData.customerPhone}</p>` : ''}
+             ${formData.customerOrgNr ? `<p>Org.nr: ${formData.customerOrgNr}</p>` : ''}
+             ${formData.customerVatNr ? `<p>Momsnr: ${formData.customerVatNr}</p>` : ''}
+           </div>
+         </div>
 
         <!-- AI Generated Text -->
         ${formData.aiGeneratedText ? `
