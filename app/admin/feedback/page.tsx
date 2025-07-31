@@ -28,6 +28,11 @@ export default function FeedbackAdminPage() {
     }
 
     fetchFeedback();
+
+    // Uppdatera automatiskt var 30:e sekund
+    const interval = setInterval(fetchFeedback, 30000);
+
+    return () => clearInterval(interval);
   }, [router]);
 
   const fetchFeedback = async () => {
@@ -99,9 +104,20 @@ export default function FeedbackAdminPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Feedback Översikt</h1>
-          <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Feedback Översikt</h1>
+            <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
+          </div>
+          <button
+            onClick={fetchFeedback}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Uppdatera</span>
+          </button>
         </div>
 
         {stats && (
