@@ -25,3 +25,13 @@ model User {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
+
+model Feedback {
+    id                String   @id @default(cuid())
+    easyToUse         Boolean
+    pdfWorks          Boolean
+    looksProfessional Boolean
+    wouldRecommend    Boolean
+    additionalComments String?
+    createdAt         DateTime @default(now())
+}
