@@ -41,14 +41,18 @@ export async function POST(req: Request) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Offert ${formData.quoteNumber || 'OFF-33'}</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: white;
-            color: #333;
-          }
+                 <style>
+           * {
+             box-sizing: border-box;
+           }
+           body {
+             font-family: Arial, sans-serif;
+             margin: 0;
+             padding: 20px;
+             background: white;
+             color: #333;
+             line-height: 1.4;
+           }
           .header {
             display: flex;
             justify-content: space-between;
@@ -95,25 +99,28 @@ export async function POST(req: Request) {
             border-radius: 5px;
             white-space: pre-wrap;
           }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-          }
-          th {
-            background-color: ${colors.primary};
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: bold;
-          }
-          td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-          }
-          tr:nth-child(even) {
-            background-color: #f9f9f9;
-          }
+                     table {
+             width: 100%;
+             border-collapse: collapse;
+             margin: 20px 0;
+             font-size: 14px;
+           }
+           th {
+             background-color: ${colors.primary};
+             color: white;
+             padding: 12px 8px;
+             text-align: left;
+             font-weight: bold;
+             font-size: 14px;
+           }
+           td {
+             padding: 12px 8px;
+             border-bottom: 1px solid #eee;
+             vertical-align: top;
+           }
+           tr:nth-child(even) {
+             background-color: #f9f9f9;
+           }
           .total-section {
             margin-top: 20px;
             text-align: right;
@@ -294,20 +301,22 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
         "Accept": "application/pdf"
       },
-      body: JSON.stringify({ 
-        html,
-        options: {
-          format: 'A4',
-          margin: {
-            top: '10mm',
-            right: '10mm', 
-            bottom: '10mm',
-            left: '10mm'
-          },
-          printBackground: true,
-          preferCSSPageSize: true
-        }
-      })
+             body: JSON.stringify({ 
+         html,
+         options: {
+           format: 'A4',
+           margin: {
+             top: '15mm',
+             right: '15mm', 
+             bottom: '15mm',
+             left: '15mm'
+           },
+           printBackground: true,
+           preferCSSPageSize: true,
+           displayHeaderFooter: false,
+           scale: 1.0
+         }
+       })
     });
 
     if (!pdfRes.ok) {
