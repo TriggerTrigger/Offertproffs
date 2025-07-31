@@ -48,18 +48,25 @@ export default function Header() {
             >
               Feedback
             </button>
-            <button
-              onClick={() => router.push('/admin/feedback')}
-              className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
-            >
-              Se feedback
-            </button>
-            <button
-              onClick={() => router.push('/admin/users')}
-              className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
-            >
-              Test-användare
-            </button>
+            
+            {/* Admin-knappar - bara synliga för admin */}
+            {user && user.email === 'info@offertproffs.nu' && (
+              <>
+                <button
+                  onClick={() => router.push('/admin/feedback')}
+                  className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
+                >
+                  Se feedback
+                </button>
+                <button
+                  onClick={() => router.push('/admin/users')}
+                  className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
+                >
+                  Test-användare
+                </button>
+              </>
+            )}
+            
             <button
               onClick={() => router.push('/valj-mall')}
               className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
