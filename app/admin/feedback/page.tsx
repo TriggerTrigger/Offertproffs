@@ -27,6 +27,7 @@ export default function FeedbackAdminPage() {
   const [updateTrigger, setUpdateTrigger] = useState(0);
   const [finalTrigger, setFinalTrigger] = useState(0);
   const [renderKey2, setRenderKey2] = useState(0);
+  const [simpleKey, setSimpleKey] = useState(0);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -51,38 +52,6 @@ export default function FeedbackAdminPage() {
     console.log('Feedback updated:', feedback.length, 'items');
   }, [feedback]);
 
-  // Force re-render när refreshTrigger ändras
-  useEffect(() => {
-    console.log('Refresh trigger updated:', refreshTrigger);
-  }, [refreshTrigger]);
-
-  // Force re-render när timestamp ändras
-  useEffect(() => {
-    console.log('Timestamp updated:', timestamp);
-  }, [timestamp]);
-
-  // Force re-render när feedback ändras
-  useEffect(() => {
-    console.log('Feedback state changed:', feedback.length, 'items');
-    // Force re-render genom att uppdatera en state
-    setRefreshCount(prev => prev + 1);
-  }, [feedback]);
-
-  // Force re-render när updateTrigger ändras
-  useEffect(() => {
-    console.log('Update trigger changed:', updateTrigger);
-  }, [updateTrigger]);
-
-  // Force re-render när finalTrigger ändras
-  useEffect(() => {
-    console.log('Final trigger changed:', finalTrigger);
-  }, [finalTrigger]);
-
-  // Force re-render när renderKey2 ändras
-  useEffect(() => {
-    console.log('Render key 2 changed:', renderKey2);
-  }, [renderKey2]);
-
     const fetchFeedback = async (showLoading = true) => {
     if (showLoading) {
       setIsLoading(true);
@@ -106,6 +75,7 @@ export default function FeedbackAdminPage() {
          setUpdateTrigger(prev => prev + 1);
          setFinalTrigger(prev => prev + 1);
          setRenderKey2(prev => prev + 1);
+         setSimpleKey(prev => prev + 1);
          console.log('Force update set to:', forceUpdate + 1);
        } else {
         setError('Kunde inte hämta feedback');
@@ -170,7 +140,7 @@ export default function FeedbackAdminPage() {
   }
 
      return (
-     <div key={renderKey2} className="min-h-screen bg-gray-50 py-8">
+     <div key={simpleKey} className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8 flex justify-between items-center">
                      <div>
