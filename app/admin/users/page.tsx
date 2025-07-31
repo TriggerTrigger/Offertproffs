@@ -24,6 +24,19 @@ export default function UsersAdminPage() {
       router.push('/');
       return;
     }
+    
+    // Kontrollera att det är admin som är inloggad
+    try {
+      const user = JSON.parse(userData);
+      if (user.email !== 'info@offertproffs.nu') {
+        router.push('/');
+        return;
+      }
+    } catch (error) {
+      router.push('/');
+      return;
+    }
+    
     fetchUsers();
   }, [router]);
 
