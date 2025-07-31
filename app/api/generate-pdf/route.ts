@@ -1,119 +1,253 @@
 
 import { NextResponse } from 'next/server';
+import puppeteer from 'puppeteer';
 
 export async function POST(req: Request) {
   try {
     const { formData, selectedTemplate } = await req.json();
 
-    const getTemplateColors = (template: string) => {
-      switch (template) {
-        case '1': return { primary: '#3B82F6', secondary: '#1E40AF', bg: '#EFF6FF' };
-        case '2': return { primary: '#10B981', secondary: '#047857', bg: '#ECFDF5' };
-        case '3': return { primary: '#F59E0B', secondary: '#D97706', bg: '#FFFBEB' };
-        case '4': return { primary: '#8B5CF6', secondary: '#7C3AED', bg: '#F3E8FF' };
-        default: return { primary: '#3B82F6', secondary: '#1E40AF', bg: '#EFF6FF' };
-      }
-    };
+    console.log('Received formData:', Object.keys(formData));
+    console.log('Selected template:', selectedTemplate);
 
-    const calculateTotal = () => {
-      return formData.products?.reduce((sum: number, product: any) => {
-        const lineTotal = product.quantity * product.price;
-        const discountAmount = lineTotal * (product.discount / 100);
-        const afterDiscount = lineTotal - discountAmount;
-        const vatAmount = afterDiscount * (product.vat / 100);
-        return sum + afterDiscount + vatAmount;
-      }, 0) || 0;
-    };
-
-    const colors = getTemplateColors(selectedTemplate);
-
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>Offert ${formData.quoteNumber}</title>
-        <style>
-          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-          .header { display: flex; justify-content: space-between; margin-bottom: 32px; background-color: ${colors.bg}; padding: 20px; border-radius: 10px; }
-          h1, h2, h3 { color: ${colors.primary}; }
-          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-          th, td { border: 1px solid #ccc; padding: 8px; }
-          th { background: ${colors.bg}; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <div>
-            <h1>${formData.companyName}</h1>
-            <p>${formData.companyStreet}, ${formData.companyPostalCode} ${formData.companyCity}</p>
-            <p>${formData.companyEmail}</p>
+    // Skapa HTML för offerten baserat på mall - samma som förhandsvisningen
+    let html = '';
+    
+    if (selectedTemplate === 'template1') {
+      html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Offert ${formData.offertNummer || 'OFF-33'}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 20px;
+              background: white;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #333;
+              padding-bottom: 20px;
+            }
+            .company-info {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 30px;
+            }
+            .client-info {
+              flex: 1;
+            }
+            .offer-info {
+              flex: 1;
+              text-align: right;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 20px 0;
+            }
+            th, td {
+              border: 1px solid #ddd;
+              padding: 12px;
+              text-align: left;
+            }
+            th {
+              background-color: #f2f2f2;
+              font-weight: bold;
+            }
+            .total-row {
+              font-weight: bold;
+              background-color: #f9f9f9;
+            }
+            .footer {
+              margin-top: 30px;
+              text-align: center;
+              font-size: 12px;
+              color: #666;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Offert ${formData.offertNummer || 'OFF-33'}</h1>
+            <p>Skapad: ${new Date().toLocaleDateString('sv-SE')}</p>
           </div>
-          <div>
-            <h2>Offert #${formData.quoteNumber}</h2>
-            <p>Datum: ${formData.quoteDate}</p>
-            <p>Giltig till: ${formData.validUntil}</p>
+          
+          <div class="company-info">
+            <div class="client-info">
+              <h3>Företag</h3>
+              <p><strong>${formData.foretagNamn || 'Företag AB'}</strong></p>
+              <p>${formData.foretagAdress || 'Adress 123'}</p>
+              <p>${formData.foretagTelefon || '070-123 45 67'}</p>
+              <p>${formData.foretagEmail || 'info@foretag.se'}</p>
+            </div>
+            <div class="offer-info">
+              <h3>Kund</h3>
+              <p><strong>${formData.kundNamn || 'Kund AB'}</strong></p>
+              <p>${formData.kundAdress || 'Kundadress 456'}</p>
+              <p>${formData.kundTelefon || '070-987 65 43'}</p>
+              <p>${formData.kundEmail || 'kund@kund.se'}</p>
+            </div>
           </div>
-        </div>
-
-        ${formData.products?.length > 0 ? `
+          
+          <h2>Produkter och tjänster</h2>
           <table>
             <thead>
               <tr>
-                <th>Benämning</th>
+                <th>Produkt/Tjänst</th>
+                <th>Beskrivning</th>
                 <th>Antal</th>
-                <th>Pris</th>
-                <th>Rabatt %</th>
-                <th>Moms %</th>
+                <th>Enhetspris</th>
+                <th>Summa</th>
               </tr>
             </thead>
             <tbody>
-              ${formData.products.map((p: any) => `
+              ${formData.produkter ? formData.produkter.map((produkt: any, index: number) => `
                 <tr>
-                  <td>${p.name}</td>
-                  <td>${p.quantity}</td>
-                  <td>${p.price}</td>
-                  <td>${p.discount}</td>
-                  <td>${p.vat}</td>
-                </tr>`).join("")}
+                  <td>${produkt.namn || 'Produkt ' + (index + 1)}</td>
+                  <td>${produkt.beskrivning || 'Beskrivning'}</td>
+                  <td>${produkt.antal || 1}</td>
+                  <td>${produkt.pris || 0} kr</td>
+                  <td>${(produkt.antal || 1) * (produkt.pris || 0)} kr</td>
+                </tr>
+              `).join('') : `
+                <tr>
+                  <td>Exempel produkt</td>
+                  <td>Beskrivning av produkt</td>
+                  <td>1</td>
+                  <td>1000 kr</td>
+                  <td>1000 kr</td>
+                </tr>
+              `}
             </tbody>
-          </table>` : ''}
+          </table>
+          
+          <div class="footer">
+            <p>Offert gäller i 30 dagar från datum</p>
+            <p>Villkor och betalningsvillkor enligt överenskommelse</p>
+          </div>
+        </body>
+        </html>
+      `;
+    } else {
+      // Standardmall
+      html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Offert</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .header { text-align: center; margin-bottom: 30px; }
+            table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Offert</h1>
+            <p>Datum: ${new Date().toLocaleDateString('sv-SE')}</p>
+          </div>
+          
+          <h2>Produkter</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Produkt</th>
+                <th>Beskrivning</th>
+                <th>Antal</th>
+                <th>Pris</th>
+                <th>Summa</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Standard produkt</td>
+                <td>Beskrivning</td>
+                <td>1</td>
+                <td>500 kr</td>
+                <td>500 kr</td>
+              </tr>
+            </tbody>
+          </table>
+        </body>
+        </html>
+      `;
+    }
 
-        <p style="text-align:right; margin-top:40px;"><strong>Total: ${calculateTotal().toFixed(2)} kr</strong></p>
-      </body>
-      </html>
-    `;
+    console.log('Generated HTML length:', html.length);
 
-    const pdfRes = await fetch("https://pdf-server-production-66e0.up.railway.app/generate", {
-
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ html })
+    // Använd Puppeteer med html2pdf.js för att få samma resultat som förhandsvisningen
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
-    if (!pdfRes.ok) {
-      console.error('PDF server error:', await pdfRes.text());
-      throw new Error("Misslyckades att generera PDF");
-    }
+    const page = await browser.newPage();
     
-    const pdfBuffer = await pdfRes.arrayBuffer();
-    
+    // Ladda html2pdf.js
+    await page.addScriptTag({
+      url: 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'
+    });
+
+    // Sätt HTML-innehållet
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+
+    // Använd samma inställningar som förhandsvisningen
+    const pdfBuffer = await page.evaluate(() => {
+      return new Promise<Uint8Array>((resolve) => {
+        const element = document.body;
+        const opt = {
+          margin: 10,
+          filename: 'offert.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // @ts-ignore - html2pdf är tillgängligt via CDN
+        const html2pdf = (window as any).html2pdf;
+        html2pdf().set(opt).from(element).output('datauristring').then((dataUri: string) => {
+          // Konvertera data URI till buffer
+          const base64 = dataUri.split(',')[1];
+          const binaryString = atob(base64);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          resolve(bytes);
+        });
+      });
+    });
+
+    await browser.close();
+
     // Kontrollera att vi faktiskt fick en PDF
-    if (pdfBuffer.byteLength === 0) {
+    if (pdfBuffer.length === 0) {
       throw new Error("PDF är tom");
     }
 
-    console.log('PDF generated successfully, size:', pdfBuffer.byteLength, 'bytes');
+    console.log('PDF generated successfully, size:', pdfBuffer.length, 'bytes');
 
-    return new Response(pdfBuffer, {
+    return new Response(pdfBuffer as Buffer, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="offert.pdf"',
-      }
+      },
     });
 
-  } catch (err) {
-    console.error("Fel i PDF-generering:", err);
-    return NextResponse.json({ error: 'PDF-generering misslyckades' }, { status: 500 });
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    return NextResponse.json(
+      { error: "Misslyckades att generera PDF" },
+      { status: 500 }
+    );
   }
 }
