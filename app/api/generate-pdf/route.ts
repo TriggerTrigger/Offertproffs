@@ -106,11 +106,9 @@ export async function POST(req: Request) {
                      .ai-text {
              margin: 25px 0;
              padding: 20px;
-             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+             background-color: #f9f9f9;
              border-radius: 10px;
              white-space: pre-wrap;
-             border-left: 4px solid ${colors.primary};
-             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
            }
                      table {
              width: 100%;
@@ -162,24 +160,19 @@ export async function POST(req: Request) {
            }
                      .delivery-section {
              margin-top: 40px;
-             padding: 25px;
-             border-radius: 15px;
-             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-             border: 1px solid #e9ecef;
+             padding-top: 20px;
+             border-top: 1px solid #eee;
            }
                      .delivery-section h3 {
              color: ${colors.secondary};
-             font-size: 20px;
+             font-size: 18px;
              font-weight: 600;
-             margin-bottom: 20px;
-             border-bottom: 2px solid ${colors.secondary};
-             padding-bottom: 8px;
+             margin-bottom: 15px;
            }
                      .delivery-grid {
              display: grid;
              grid-template-columns: 1fr 1fr;
-             gap: 20px;
+             gap: 15px;
              font-size: 14px;
            }
                      .delivery-item p {
@@ -187,10 +180,8 @@ export async function POST(req: Request) {
            }
            .delivery-item .label {
              font-weight: 600;
-             color: #495057;
-             font-size: 13px;
-             text-transform: uppercase;
-             letter-spacing: 0.5px;
+             color: #666;
+             font-size: 14px;
            }
         </style>
       </head>
@@ -358,52 +349,71 @@ export async function POST(req: Request) {
            </div>
          ` : ''}
 
-         <!-- ROT/RUT-avdrag -->
-         ${(formData.rotDeduction || formData.rutDeduction) ? `
-           <div class="delivery-section">
-             <h3>ROT/RUT-avdrag</h3>
-             <div class="ai-text">
-               ${formData.rotDeduction ? 'ROT-avdrag gäller (50% på arbetskostnad)' : ''}
-               ${formData.rotDeduction && formData.rutDeduction ? '<br>' : ''}
-               ${formData.rutDeduction ? 'RUT-avdrag gäller (50% på arbetskostnad)' : ''}
-               ${formData.deductionInfo ? `<br><br>${formData.deductionInfo}` : ''}
-             </div>
-           </div>
-         ` : ''}
+                   <!-- ROT/RUT-avdrag -->
+          ${(formData.rotDeduction || formData.rutDeduction) ? `
+            <div class="delivery-section">
+              <h3>ROT/RUT-avdrag</h3>
+              <div style="font-size: 14px; color: #333;">
+                ${formData.rotDeduction ? '<div style="margin-bottom: 8px;"><span style="font-weight: 600; color: #10B981;">✓ ROT-avdrag gäller (50% på arbetskostnad)</span></div>' : ''}
+                ${formData.rutDeduction ? '<div style="margin-bottom: 8px;"><span style="font-weight: 600; color: #10B981;">✓ RUT-avdrag gäller (50% på arbetskostnad)</span></div>' : ''}
+                ${formData.deductionInfo ? `
+                  <div style="margin-top: 12px; padding: 12px; background-color: #ECFDF5; border-radius: 4px;">
+                    <p style="font-weight: 600; margin-bottom: 4px;">Information om avdrag:</p>
+                    <p>${formData.deductionInfo}</p>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          ` : ''}
 
-         <!-- Tilläggsinformation -->
-         ${(formData.warranties || formData.additionalTerms || formData.specialNotes) ? `
-           <div class="delivery-section">
-             <h3>Tilläggsinformation</h3>
-             <div class="ai-text">
-               ${formData.warranties ? `<strong>Garantier:</strong><br>${formData.warranties}<br><br>` : ''}
-               ${formData.additionalTerms ? `<strong>Övriga villkor:</strong><br>${formData.additionalTerms}<br><br>` : ''}
-               ${formData.specialNotes ? `<strong>Särskilda anmärkningar:</strong><br>${formData.specialNotes}` : ''}
-             </div>
-           </div>
-         ` : ''}
+                   <!-- Tilläggsinformation -->
+          ${(formData.warranties || formData.additionalTerms || formData.specialNotes) ? `
+            <div class="delivery-section">
+              <h3>Tilläggsinformation</h3>
+              <div style="font-size: 14px; color: #333;">
+                ${formData.warranties ? `
+                  <div style="margin-bottom: 16px;">
+                    <p style="font-weight: 600; margin-bottom: 4px;">Garantier:</p>
+                    <p>${formData.warranties}</p>
+                  </div>
+                ` : ''}
+                ${formData.additionalTerms ? `
+                  <div style="margin-bottom: 16px;">
+                    <p style="font-weight: 600; margin-bottom: 4px;">Övriga villkor:</p>
+                    <p>${formData.additionalTerms}</p>
+                  </div>
+                ` : ''}
+                ${formData.specialNotes ? `
+                  <div style="margin-bottom: 16px;">
+                    <p style="font-weight: 600; margin-bottom: 4px;">Särskilda anmärkningar:</p>
+                    <p>${formData.specialNotes}</p>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          ` : ''}
 
-         <!-- Kontaktuppgifter för frågor -->
-         ${(formData.contactPersonQuestions || formData.contactPhoneQuestions || formData.contactEmailQuestions) ? `
-           <div class="delivery-section">
-             <h3>Kontaktuppgifter för frågor</h3>
-             <div class="ai-text">
-               ${formData.contactPersonQuestions ? `<strong>Kontaktperson:</strong> ${formData.contactPersonQuestions}<br>` : ''}
-               ${formData.contactPhoneQuestions ? `<strong>Telefon:</strong> ${formData.contactPhoneQuestions}<br>` : ''}
-               ${formData.contactEmailQuestions ? `<strong>E-post:</strong> ${formData.contactEmailQuestions}` : ''}
-             </div>
-           </div>
-         ` : ''}
+                   <!-- Kontaktuppgifter för frågor -->
+          ${(formData.contactPersonQuestions || formData.contactPhoneQuestions || formData.contactEmailQuestions) ? `
+            <div class="delivery-section">
+              <h3>Kontaktuppgifter för frågor</h3>
+              <div style="font-size: 14px; color: #333;">
+                ${formData.contactPersonQuestions ? `<p><span style="font-weight: 600;">Kontaktperson:</span> ${formData.contactPersonQuestions}</p>` : ''}
+                ${formData.contactPhoneQuestions ? `<p><span style="font-weight: 600;">Telefon:</span> ${formData.contactPhoneQuestions}</p>` : ''}
+                ${formData.contactEmailQuestions ? `<p><span style="font-weight: 600;">E-post:</span> ${formData.contactEmailQuestions}</p>` : ''}
+              </div>
+            </div>
+          ` : ''}
 
-         <!-- Övriga villkor -->
-         ${formData.otherTerms ? `
-           <div class="delivery-section">
-             <h3>Övriga villkor</h3>
-             <div class="ai-text">
-               ${formData.otherTerms}
-             </div>
-           </div>
-         ` : ''}
+                   <!-- Övriga villkor -->
+          ${formData.otherTerms ? `
+            <div class="delivery-section">
+              <h3>Övriga villkor</h3>
+              <div style="font-size: 14px; color: #333;">
+                ${formData.otherTerms}
+              </div>
+            </div>
+          ` : ''}
       </body>
       </html>
     `;
