@@ -177,6 +177,29 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
       setFormData(prev => ({ ...prev, ...parsed }));
     }
     
+    // Load user data from login
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const user = JSON.parse(userData);
+        setFormData(prev => ({
+          ...prev,
+          companyName: user.companyName || prev.companyName,
+          companyStreet: user.companyStreet || prev.companyStreet,
+          companyPostalCode: user.companyPostalCode || prev.companyPostalCode,
+          companyCity: user.companyCity || prev.companyCity,
+          companyPhone: user.companyPhone || prev.companyPhone,
+          companyEmail: user.companyEmail || prev.companyEmail,
+          companyOrgNr: user.companyOrgNr || prev.companyOrgNr,
+          companyVatNr: user.companyVatNr || prev.companyVatNr,
+          companyWebsite: user.companyWebsite || prev.companyWebsite,
+          companyBankAccount: user.companyBankAccount || prev.companyBankAccount,
+        }));
+      } catch (error) {
+        console.error('Fel vid laddning av användardata:', error);
+      }
+    }
+    
     // Generate quote number
     const savedQuoteNumber = localStorage.getItem('lastQuoteNumber');
     const nextNumber = savedQuoteNumber ? parseInt(savedQuoteNumber) + 1 : 1001;
@@ -216,6 +239,59 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
 
   const handleInputChange = (field: keyof FormData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Spara företagsinformation till databasen om det är företagsdata
+    const companyFields = [
+      'companyName', 'companyStreet', 'companyPostalCode', 'companyCity',
+      'companyPhone', 'companyEmail', 'companyOrgNr', 'companyVatNr',
+      'companyWebsite', 'companyBankAccount'
+    ];
+    
+    if (companyFields.includes(field)) {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        try {
+          const user = JSON.parse(userData);
+          const companyData = {
+            companyName: field === 'companyName' ? value : formData.companyName,
+            companyStreet: field === 'companyStreet' ? value : formData.companyStreet,
+            companyPostalCode: field === 'companyPostalCode' ? value : formData.companyPostalCode,
+            companyCity: field === 'companyCity' ? value : formData.companyCity,
+            companyPhone: field === 'companyPhone' ? value : formData.companyPhone,
+            companyEmail: field === 'companyEmail' ? value : formData.companyEmail,
+            companyOrgNr: field === 'companyOrgNr' ? value : formData.companyOrgNr,
+            companyVatNr: field === 'companyVatNr' ? value : formData.companyVatNr,
+            companyWebsite: field === 'companyWebsite' ? value : formData.companyWebsite,
+            companyBankAccount: field === 'companyBankAccount' ? value : formData.companyBankAccount,
+          };
+          
+          // Spara till databasen
+          fetch('/api/auth/save-company', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: user.id,
+              companyData
+            }),
+          }).then(response => {
+            if (response.ok) {
+              return response.json();
+            }
+          }).then(data => {
+            if (data?.user) {
+              // Uppdatera localStorage med nya användardata
+              localStorage.setItem('user', JSON.stringify(data.user));
+            }
+          }).catch(error => {
+            console.error('Fel vid sparande av företagsinformation:', error);
+          });
+        } catch (error) {
+          console.error('Fel vid hantering av användardata:', error);
+        }
+      }
+    }
   };
 
   const addProduct = () => {

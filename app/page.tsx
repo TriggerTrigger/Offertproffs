@@ -8,13 +8,48 @@ import Image from 'next/image';
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      setError('Fyll i både email och lösenord');
+      return;
+    }
+
     setIsLoading(true);
-    // Simulera loading
-    setTimeout(() => {
-      router.push('/valj-mall');
-    }, 1000);
+    setError('');
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Spara användardata i localStorage
+        localStorage.setItem('user', JSON.stringify(data.user));
+        router.push('/valj-mall');
+      } else {
+        setError(data.error || 'Inloggning misslyckades');
+      }
+    } catch (error) {
+      setError('Ett fel uppstod vid inloggning');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
   };
 
   return (
@@ -37,17 +72,26 @@ export default function LoginPage() {
       <div className="relative z-10 bg-white rounded-2xl shadow-2xl p-12 max-w-md w-full mx-4">
         <div className="text-center">
           {/* Logotyp */}
-          <div className="mb-8">
+          <div>
             <h1 className="text-4xl font-bold text-gray-800 mb-2">OffertProffs</h1>
             <p className="text-gray-600">Professionell Offertplattform</p>
           </div>
 
           {/* Login Form */}
-          <div className="space-y-6">
+          <div className="space-y-6 mt-8">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+            
             <div>
               <input
                 type="email"
                 placeholder="E-postadress"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               />
             </div>
@@ -55,6 +99,9 @@ export default function LoginPage() {
               <input
                 type="password"
                 placeholder="Lösenord"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={handleKeyPress}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
               />
             </div>
@@ -67,9 +114,11 @@ export default function LoginPage() {
               {isLoading ? 'Loggar in...' : 'Logga in'}
             </button>
             
-            <p className="text-sm text-gray-500 mt-4">
-              Förberedd för framtida inloggningsfunktionalitet
-            </p>
+            <div className="text-sm text-gray-500 mt-4">
+              <p>Testa med:</p>
+              <p>Email: offertproffs@gmail.com</p>
+              <p>Lösenord: test123</p>
+            </div>
           </div>
         </div>
       </div>
