@@ -238,21 +238,21 @@ export async function POST(req: Request) {
                 const vatAmount = afterDiscount * (product.vat / 100);
                 const total = afterDiscount + vatAmount;
 
-                return `
-                  <tr>
-                    <td>
-                      <div>
-                        <p style="font-weight: bold;">${product.name}</p>
-                        ${product.description ? `<p style="font-size: 12px; color: #666;">${product.description}</p>` : ''}
-                      </div>
-                    </td>
-                    <td style="text-align: center;">${product.quantity}</td>
-                    <td style="text-align: right;">${product.price.toLocaleString('sv-SE', { style: 'currency', currency: 'SEK' })}</td>
-                    <td style="text-align: center; font-size: 12px;">${product.timeEstimate || '-'}</td>
-                    <td style="text-align: right;">${product.vat}%</td>
-                    <td style="text-align: right; font-weight: bold;">${total.toLocaleString('sv-SE', { style: 'currency', currency: 'SEK' })}</td>
-                  </tr>
-                `;
+                                 return `
+                   <tr>
+                     <td style="vertical-align: top;">
+                       <div>
+                         <p style="font-weight: bold; margin: 0;">${product.name}</p>
+                         ${product.description ? `<p style="font-size: 12px; color: #666; margin: 4px 0 0 0;">${product.description}</p>` : ''}
+                       </div>
+                     </td>
+                     <td style="text-align: center; vertical-align: top;">${product.quantity}</td>
+                     <td style="text-align: right; vertical-align: top;">${product.price.toLocaleString('sv-SE', { style: 'currency', currency: 'SEK' })}</td>
+                     <td style="text-align: center; vertical-align: top; font-size: 14px;">${product.timeEstimate || '-'}</td>
+                     <td style="text-align: right; vertical-align: top;">${product.vat}%</td>
+                     <td style="text-align: right; font-weight: bold; vertical-align: top;">${total.toLocaleString('sv-SE', { style: 'currency', currency: 'SEK' })}</td>
+                   </tr>
+                 `;
               }).join('')}
             </tbody>
           </table>
