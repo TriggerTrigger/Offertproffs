@@ -30,8 +30,31 @@ export async function POST(req: Request) {
       );
     }
 
+    // Kontrollera test-period
+    if (user.testPeriodEnd && user.testPeriodEnd < new Date()) {
+      return NextResponse.json(
+        { error: 'Din test-period har gått ut. Kontakta admin för förlängning.' },
+        { status: 403 }
+      );
+    }
+
+    // Uppdatera första inloggning och test-period om det är första gången
+    let updatedUser = user;
+    if (!user.firstLoginDate) {
+      const testPeriodEnd = new Date();
+      testPeriodEnd.setDate(testPeriodEnd.getDate() + 14); // 14 dagar
+
+      updatedUser = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          firstLoginDate: new Date(),
+          testPeriodEnd: testPeriodEnd
+        }
+      });
+    }
+
     // Returnera användardata (utan lösenord)
-    const { password: _, ...userData } = user;
+    const { password: _, ...userData } = updatedUser;
 
     return NextResponse.json({
       success: true,
