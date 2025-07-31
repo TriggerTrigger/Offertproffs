@@ -18,6 +18,7 @@ export default function FeedbackAdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [forceUpdate, setForceUpdate] = useState(0);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -46,11 +47,12 @@ export default function FeedbackAdminPage() {
     try {
       const response = await fetch('/api/admin/feedback');
       
-      if (response.ok) {
-        const data = await response.json();
-        setFeedback(data.feedback);
-        setLastUpdate(new Date());
-      } else {
+             if (response.ok) {
+         const data = await response.json();
+         setFeedback(data.feedback);
+         setLastUpdate(new Date());
+         setForceUpdate(prev => prev + 1);
+       } else {
         setError('Kunde inte hämta feedback');
       }
     } catch (error) {
@@ -149,7 +151,7 @@ export default function FeedbackAdminPage() {
         </div>
 
                  {stats && (
-           <div key={lastUpdate.getTime()} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+           <div key={forceUpdate} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Totalt antal svar</h3>
               <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
@@ -211,7 +213,7 @@ export default function FeedbackAdminPage() {
           </div>
           
                      <div className="overflow-x-auto">
-             <table key={lastUpdate.getTime()} className="min-w-full divide-y divide-gray-200">
+             <table key={forceUpdate} className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
@@ -224,7 +226,7 @@ export default function FeedbackAdminPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                                  {feedback.map((item) => (
-                   <tr key={`${item.id}-${lastUpdate.getTime()}`} className="hover:bg-gray-50">
+                   <tr key={`${item.id}-${forceUpdate}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.createdAt).toLocaleDateString('sv-SE')}
                     </td>
