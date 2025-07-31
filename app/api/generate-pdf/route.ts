@@ -261,38 +261,88 @@ export async function POST(req: Request) {
           </div>
         ` : ''}
 
-        <!-- Leveransvillkor -->
-        ${(formData.deliveryTime || formData.deliveryMethod || formData.shippingCosts || formData.deliveryAddress) ? `
-          <div class="delivery-section">
-            <h3>Leveransvillkor</h3>
-            <div class="delivery-grid">
-              ${formData.deliveryTime ? `
-                <div class="delivery-item">
-                  <p class="label">Leveranstid:</p>
-                  <p>${formData.deliveryTime}</p>
-                </div>
-              ` : ''}
-              ${formData.deliveryMethod ? `
-                <div class="delivery-item">
-                  <p class="label">Leveranssätt:</p>
-                  <p>${formData.deliveryMethod}</p>
-                </div>
-              ` : ''}
-              ${formData.shippingCosts ? `
-                <div class="delivery-item">
-                  <p class="label">Fraktkostnader:</p>
-                  <p>${formData.shippingCosts}</p>
-                </div>
-              ` : ''}
-              ${formData.deliveryAddress ? `
-                <div class="delivery-item">
-                  <p class="label">Leveransadress:</p>
-                  <p>${formData.deliveryAddress}</p>
-                </div>
-              ` : ''}
-            </div>
-          </div>
-        ` : ''}
+                 <!-- Leveransvillkor -->
+         ${(formData.deliveryTime || formData.deliveryMethod || formData.shippingCosts || formData.deliveryAddress) ? `
+           <div class="delivery-section">
+             <h3>Leveransvillkor</h3>
+             <div class="delivery-grid">
+               ${formData.deliveryTime ? `
+                 <div class="delivery-item">
+                   <p class="label">Leveranstid:</p>
+                   <p>${formData.deliveryTime}</p>
+                 </div>
+               ` : ''}
+               ${formData.deliveryMethod ? `
+                 <div class="delivery-item">
+                   <p class="label">Leveranssätt:</p>
+                   <p>${formData.deliveryMethod}</p>
+                 </div>
+               ` : ''}
+               ${formData.shippingCosts ? `
+                 <div class="delivery-item">
+                   <p class="label">Fraktkostnader:</p>
+                   <p>${formData.shippingCosts}</p>
+                 </div>
+               ` : ''}
+               ${formData.deliveryAddress ? `
+                 <div class="delivery-item">
+                   <p class="label">Leveransadress:</p>
+                   <p>${formData.deliveryAddress}</p>
+                 </div>
+               ` : ''}
+             </div>
+           </div>
+         ` : ''}
+
+         <!-- Betalningsvillkor -->
+         ${formData.paymentTerms ? `
+           <div class="delivery-section">
+             <h3>Betalningsvillkor</h3>
+             <div class="ai-text">
+               ${formData.paymentTerms}
+             </div>
+           </div>
+         ` : ''}
+
+         <!-- ROT/RUT-avdrag -->
+         ${formData.rotRutDeduction ? `
+           <div class="delivery-section">
+             <h3>ROT/RUT-avdrag</h3>
+             <div class="ai-text">
+               ${formData.rotRutDeduction}
+             </div>
+           </div>
+         ` : ''}
+
+         <!-- Tilläggsinformation -->
+         ${formData.additionalInfo ? `
+           <div class="delivery-section">
+             <h3>Tilläggsinformation</h3>
+             <div class="ai-text">
+               ${formData.additionalInfo}
+             </div>
+           </div>
+         ` : ''}
+
+         <!-- Kontaktuppgifter för frågor -->
+         ${formData.contactForQuestions ? `
+           <div class="delivery-section">
+             <h3>Kontaktuppgifter för frågor</h3>
+             <div class="ai-text">
+               ${formData.contactForQuestions}
+             </div>
+           </div>
+         ` : ''}
+
+         <!-- Villkor -->
+         ${formData.terms ? `
+           <div class="delivery-section">
+             <h3>Villkor</h3>
+             <div class="ai-text">
+               ${formData.terms}
+             </div>
+           </div>
+         ` : ''}
       </body>
       </html>
     `;
