@@ -1,0 +1,36 @@
+
+'use client';
+
+import { useRouter } from 'next/navigation';
+
+export default function Header() {
+  const router = useRouter();
+
+  return (
+    <div className="bg-white shadow-sm border-b sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-2xl font-bold text-gray-800">OffertProffs</h1>
+            <span className="text-sm text-gray-500">Professionell Offertplattform</span>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => router.push('/valj-mall')}
+              className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
+            >
+              Byt mall
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
+            >
+              Logga ut
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
