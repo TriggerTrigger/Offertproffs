@@ -18,74 +18,36 @@ export default function FeedbackAdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [forceUpdate, setForceUpdate] = useState(0);
-  const [renderKey, setRenderKey] = useState(0);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [componentKey, setComponentKey] = useState(0);
-  const [timestamp, setTimestamp] = useState(Date.now());
-  const [refreshCount, setRefreshCount] = useState(0);
-  const [updateTrigger, setUpdateTrigger] = useState(0);
-  const [finalTrigger, setFinalTrigger] = useState(0);
-  const [renderKey2, setRenderKey2] = useState(0);
-  const [simpleKey, setSimpleKey] = useState(0);
   const [error, setError] = useState('');
   const router = useRouter();
 
   useEffect(() => {
-    // Kontrollera om användaren är inloggad
     const userData = localStorage.getItem('user');
     if (!userData) {
       router.push('/');
       return;
     }
-
     fetchFeedback();
-
-    // Uppdatera automatiskt var 30:e sekund
-    const interval = setInterval(fetchFeedback, 30000);
-
+    const interval = setInterval(() => fetchFeedback(false), 30000);
     return () => clearInterval(interval);
   }, [router]);
 
-  // Force re-render när feedback ändras
-  useEffect(() => {
-    console.log('Feedback updated:', feedback.length, 'items');
-  }, [feedback]);
-
-    const fetchFeedback = async (showLoading = true) => {
-    if (showLoading) {
-      setIsLoading(true);
-    }
+  const fetchFeedback = async (showLoading = true) => {
+    if (showLoading) setIsLoading(true);
     setError('');
-    
     try {
       const response = await fetch('/api/admin/feedback');
-      
-             if (response.ok) {
-         const data = await response.json();
-         console.log('Fetched feedback:', data.feedback.length, 'items');
-         setFeedback([...data.feedback]); // Force new array reference
-         setLastUpdate(new Date());
-         setForceUpdate(prev => prev + 1);
-         setRenderKey(prev => prev + 1);
-         setRefreshTrigger(prev => prev + 1);
-         setComponentKey(prev => prev + 1);
-         setTimestamp(Date.now());
-         setRefreshCount(prev => prev + 1);
-         setUpdateTrigger(prev => prev + 1);
-         setFinalTrigger(prev => prev + 1);
-         setRenderKey2(prev => prev + 1);
-         setSimpleKey(prev => prev + 1);
-         console.log('Force update set to:', forceUpdate + 1);
-       } else {
+      if (response.ok) {
+        const data = await response.json();
+        setFeedback(data.feedback);
+        setLastUpdate(new Date());
+      } else {
         setError('Kunde inte hämta feedback');
       }
     } catch (error) {
       setError('Ett fel uppstod');
     } finally {
-      if (showLoading) {
-        setIsLoading(false);
-      }
+      if (showLoading) setIsLoading(false);
     }
   };
 
@@ -139,31 +101,30 @@ export default function FeedbackAdminPage() {
     );
   }
 
-     return (
-     <div key={simpleKey} className="min-h-screen bg-gray-50 py-8">
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8 flex justify-between items-center">
-                     <div>
-             <h1 className="text-3xl font-bold text-gray-800 mb-2">Feedback Översikt</h1>
-             <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
-             <p className="text-sm text-gray-500">Senast uppdaterad: {lastUpdate.toLocaleTimeString()}</p>
-           </div>
-                     <button
-             onClick={async () => {
-               setIsRefreshing(true);
-               try {
-                 await fetchFeedback(false);
-                 // Lägg till en liten fördröjning så loading-staten syns
-                 await new Promise(resolve => setTimeout(resolve, 500));
-               } catch (error) {
-                 // Tyst error handling
-               } finally {
-                 setIsRefreshing(false);
-               }
-             }}
-             disabled={isRefreshing}
-             className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
-           >
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Feedback Översikt</h1>
+            <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
+            <p className="text-sm text-gray-500">Senast uppdaterad: {lastUpdate.toLocaleTimeString()}</p>
+          </div>
+          <button
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                await fetchFeedback(false);
+                await new Promise(resolve => setTimeout(resolve, 500));
+              } catch (error) {
+                // Tyst error handling
+              } finally {
+                setIsRefreshing(false);
+              }
+            }}
+            disabled={isRefreshing}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
+          >
             {isRefreshing ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             ) : (
@@ -175,8 +136,8 @@ export default function FeedbackAdminPage() {
           </button>
         </div>
 
-                 {stats && (
-           <div key={timestamp} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {stats && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Totalt antal svar</h3>
               <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
@@ -237,8 +198,8 @@ export default function FeedbackAdminPage() {
             <h2 className="text-xl font-semibold text-gray-800">Alla Feedback-svar</h2>
           </div>
           
-                     <div className="overflow-x-auto">
-             <table key={timestamp} className="min-w-full divide-y divide-gray-200">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
@@ -250,8 +211,8 @@ export default function FeedbackAdminPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                                 {feedback.map((item) => (
-                   <tr key={`${item.id}-${timestamp}`} className="hover:bg-gray-50">
+                {feedback.map((item) => (
+                  <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.createdAt).toLocaleDateString('sv-SE')}
                     </td>
