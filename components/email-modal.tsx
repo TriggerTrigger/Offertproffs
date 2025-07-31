@@ -82,9 +82,17 @@ ${formData.companyName}`
       
       console.log('PDF generated successfully, size:', pdfBuffer.byteLength, 'bytes');
       
-      // Konvertera ArrayBuffer till base64
+      // Konvertera ArrayBuffer till base64 - använd chunked approach för stora filer
       const uint8Array = new Uint8Array(pdfBuffer);
-      const base64 = btoa(String.fromCharCode(...uint8Array));
+      let binary = '';
+      const chunkSize = 8192; // Hantera i chunks för att undvika "too many arguments"
+      
+      for (let i = 0; i < uint8Array.length; i += chunkSize) {
+        const chunk = uint8Array.slice(i, i + chunkSize);
+        binary += String.fromCharCode.apply(null, chunk as any);
+      }
+      
+      const base64 = btoa(binary);
       
       console.log('Generated PDF base64 length:', base64.length);
       console.log('PDF base64 preview:', base64.substring(0, 100) + '...');
