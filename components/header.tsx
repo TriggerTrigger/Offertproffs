@@ -55,6 +55,12 @@ export default function Header() {
               Se feedback
             </button>
             <button
+              onClick={() => router.push('/admin/users')}
+              className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
+            >
+              Test-användare
+            </button>
+            <button
               onClick={() => router.push('/valj-mall')}
               className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
             >
