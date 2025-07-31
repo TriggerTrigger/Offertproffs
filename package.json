@@ -95,7 +95,6 @@
     "next-themes": "0.3.0",
     "nodemailer": "^6.9.13",
     "plotly.js": "2.35.3",
-    "puppeteer": "^24.15.0",
     "react": "18.2.0",
     "react-chartjs-2": "5.3.0",
     "react-datepicker": "6.1.0",

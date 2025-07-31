@@ -1,6 +1,5 @@
 
 import { NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
 
 export async function POST(req: Request) {
   try {
@@ -184,59 +183,45 @@ export async function POST(req: Request) {
 
     console.log('Generated HTML length:', html.length);
 
-    // Använd Puppeteer med html2pdf.js för att få samma resultat som förhandsvisningen
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    // Använd den externa PDF-servern som fungerar på Vercel
+    const pdfRes = await fetch("https://pdf-server-production-66e0.up.railway.app/generate", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Accept": "application/pdf"
+      },
+      body: JSON.stringify({ 
+        html,
+        options: {
+          format: 'A4',
+          margin: {
+            top: '10mm',
+            right: '10mm', 
+            bottom: '10mm',
+            left: '10mm'
+          },
+          printBackground: true,
+          preferCSSPageSize: true
+        }
+      })
     });
 
-    const page = await browser.newPage();
+    if (!pdfRes.ok) {
+      const errorText = await pdfRes.text();
+      console.error('PDF server error:', errorText);
+      throw new Error(`PDF-server fel: ${pdfRes.status} ${pdfRes.statusText}`);
+    }
     
-    // Ladda html2pdf.js
-    await page.addScriptTag({
-      url: 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'
-    });
-
-    // Sätt HTML-innehållet
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-
-    // Använd samma inställningar som förhandsvisningen
-    const pdfBuffer = await page.evaluate(() => {
-      return new Promise<Uint8Array>((resolve) => {
-        const element = document.body;
-        const opt = {
-          margin: 10,
-          filename: 'offert.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        // @ts-ignore - html2pdf är tillgängligt via CDN
-        const html2pdf = (window as any).html2pdf;
-        html2pdf().set(opt).from(element).output('datauristring').then((dataUri: string) => {
-          // Konvertera data URI till buffer
-          const base64 = dataUri.split(',')[1];
-          const binaryString = atob(base64);
-          const bytes = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-          }
-          resolve(bytes);
-        });
-      });
-    });
-
-    await browser.close();
-
+    const pdfBuffer = await pdfRes.arrayBuffer();
+    
     // Kontrollera att vi faktiskt fick en PDF
-    if (pdfBuffer.length === 0) {
+    if (pdfBuffer.byteLength === 0) {
       throw new Error("PDF är tom");
     }
 
-    console.log('PDF generated successfully, size:', pdfBuffer.length, 'bytes');
+    console.log('PDF generated successfully, size:', pdfBuffer.byteLength, 'bytes');
 
-    return new Response(pdfBuffer as Buffer, {
+    return new Response(pdfBuffer, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="offert.pdf"',
@@ -246,7 +231,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Error generating PDF:', error);
     return NextResponse.json(
-      { error: "Misslyckades att generera PDF" },
+      { error: `Misslyckades att generera PDF: ${error instanceof Error ? error.message : String(error)}` },
       { status: 500 }
     );
   }
