@@ -32,6 +32,8 @@ interface FormData {
   companyEmail: string;
   companyOrgNr: string;
   companyVatNr: string;
+  companyWebsite: string;
+  companyBankAccount: string;
   companyLogo: string;
   
   // Kundinfo
@@ -100,6 +102,8 @@ const initialFormData: FormData = {
   companyEmail: '',
   companyOrgNr: '',
   companyVatNr: '',
+  companyWebsite: '',
+  companyBankAccount: '',
   companyLogo: '',
   
   // Kundinfo
