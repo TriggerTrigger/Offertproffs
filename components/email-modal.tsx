@@ -93,7 +93,18 @@ ${formData.companyName}`
       
     } catch (error) {
       console.error('PDF generation error:', error);
-      throw new Error(`PDF-generering misslyckades: ${error instanceof Error ? error.message : String(error)}`);
+      
+      // Förbättrad felhantering för PDF-generering
+      let errorMessage = 'Okänt fel';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object') {
+        errorMessage = JSON.stringify(error);
+      }
+      
+      throw new Error(`PDF-generering misslyckades: ${errorMessage}`);
     }
   };
 
@@ -161,8 +172,17 @@ ${formData.companyName}`
       // Generera PDF som Base64
       const pdfBase64 = await generatePDFAsBase64();
 
+      console.log('Sending email with data:', {
+        to_email: emailData.to,
+        subject: emailData.subject,
+        message: emailData.message,
+        from_name: formData.companyName,
+        quote_number: formData.quoteNumber,
+        attachment_length: pdfBase64 ? pdfBase64.length : 0
+      });
+
       // Skicka e-post
-      await emailjs.send("service_0blfi6h", "template_5t6p3nh", {
+      const result = await emailjs.send("service_0blfi6h", "template_5t6p3nh", {
         to_email: emailData.to,
         subject: emailData.subject,
         message: emailData.message,
@@ -170,6 +190,8 @@ ${formData.companyName}`
         quote_number: formData.quoteNumber,
         attachment: pdfBase64
       });
+
+      console.log('EmailJS result:', result);
 
       setSendStatus('success');
 
@@ -184,7 +206,18 @@ ${formData.companyName}`
     } catch (error) {
       console.error('EmailJS error:', error);
       setSendStatus('error');
-      alert(`E-postfel: ${error instanceof Error ? error.message : String(error)}`);
+      
+      // Förbättrad felhantering
+      let errorMessage = 'Okänt fel';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object') {
+        errorMessage = JSON.stringify(error);
+      }
+      
+      alert(`E-postfel: ${errorMessage}`);
     } finally {
       setIsSending(false);
     }
