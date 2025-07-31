@@ -28,7 +28,6 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
     "@floating-ui/react": "0.26.0",
     "@headlessui/react": "1.7.18",
     "@heroicons/react": "^2.2.0",

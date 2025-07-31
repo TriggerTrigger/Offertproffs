@@ -152,79 +152,8 @@ ${formData.companyName}`
     }
   };
 
-  // --- EmailJS originalfunktion (behålls för backup) ---
-  const sendEmailJS = async () => {
-    if (!emailData.to) {
-      alert('E-postadress krävs');
-      return;
-    }
-
-    setIsSending(true);
-    setSendStatus('idle');
-
-    try {
-      // Importera EmailJS dynamiskt
-      const emailjs = (await import('@emailjs/browser')).default;
-
-      // Initiera EmailJS
-      emailjs.init("0qi_5qiNL1l1jMk9F");
-
-      // Generera PDF som Base64
-      const pdfBase64 = await generatePDFAsBase64();
-
-      console.log('Sending email with data:', {
-        to_email: emailData.to,
-        subject: emailData.subject,
-        message: emailData.message,
-        from_name: formData.companyName,
-        quote_number: formData.quoteNumber,
-        attachment_length: pdfBase64 ? pdfBase64.length : 0
-      });
-
-      // Skicka e-post utan attachment först (EmailJS har begränsningar med attachments)
-      const result = await emailjs.send("service_0blfi6h", "template_5t6p3nh", {
-        to_email: emailData.to,
-        subject: emailData.subject,
-        message: emailData.message,
-        from_name: formData.companyName,
-        quote_number: formData.quoteNumber
-        // attachment: pdfBase64 - EmailJS har problem med stora attachments
-      });
-
-      console.log('EmailJS result:', result);
-
-      setSendStatus('success');
-
-      // Spara offertnummer och öka för nästa
-      const currentNumber = parseInt(formData.quoteNumber.split('-')[1] || '1');
-      localStorage.setItem('lastQuoteNumber', (currentNumber + 1).toString());
-
-      setTimeout(() => {
-        onClose();
-      }, 2000);
-
-    } catch (error) {
-      console.error('EmailJS error:', error);
-      setSendStatus('error');
-      
-      // Förbättrad felhantering
-      let errorMessage = 'Okänt fel';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      } else if (error && typeof error === 'object') {
-        errorMessage = JSON.stringify(error);
-      }
-      
-      alert(`E-postfel: ${errorMessage}`);
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  // Välj vilken funktion som ska användas (byt här för att växla mellan SMTP och EmailJS)
-  const sendEmail = sendEmailSMTP; // Byt till sendEmailSMTP för att använda vår egen server
+  // Använd SMTP för e-postutskick
+  const sendEmail = sendEmailSMTP;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
