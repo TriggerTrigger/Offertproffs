@@ -148,8 +148,8 @@ export default function FeedbackAdminPage() {
           </button>
         </div>
 
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                 {stats && (
+           <div key={lastUpdate.getTime()} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Totalt antal svar</h3>
               <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
@@ -210,8 +210,8 @@ export default function FeedbackAdminPage() {
             <h2 className="text-xl font-semibold text-gray-800">Alla Feedback-svar</h2>
           </div>
           
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+                     <div className="overflow-x-auto">
+             <table key={lastUpdate.getTime()} className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
@@ -223,8 +223,8 @@ export default function FeedbackAdminPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {feedback.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
+                                 {feedback.map((item) => (
+                   <tr key={`${item.id}-${lastUpdate.getTime()}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.createdAt).toLocaleDateString('sv-SE')}
                     </td>
