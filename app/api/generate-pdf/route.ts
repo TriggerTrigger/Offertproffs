@@ -91,8 +91,19 @@ export async function POST(req: Request) {
       body: JSON.stringify({ html })
     });
 
-    if (!pdfRes.ok) throw new Error("Misslyckades att generera PDF");
+    if (!pdfRes.ok) {
+      console.error('PDF server error:', await pdfRes.text());
+      throw new Error("Misslyckades att generera PDF");
+    }
+    
     const pdfBuffer = await pdfRes.arrayBuffer();
+    
+    // Kontrollera att vi faktiskt fick en PDF
+    if (pdfBuffer.byteLength === 0) {
+      throw new Error("PDF är tom");
+    }
+
+    console.log('PDF generated successfully, size:', pdfBuffer.byteLength, 'bytes');
 
     return new Response(pdfBuffer, {
       headers: {
