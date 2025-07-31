@@ -47,96 +47,54 @@ ${formData.companyName}`
   };
 
   const generatePDFAsBase64 = async (): Promise<string> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        console.log('Starting PDF generation...');
-        console.log('FormData keys:', Object.keys(formData));
-        console.log('Selected template:', selectedTemplate);
-        
-        // Använd server-side HTML-generering
-        const response = await fetch('/api/generate-pdf', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            formData,
-            selectedTemplate,
-          }),
-        });
+    try {
+      console.log('Starting PDF generation...');
+      console.log('FormData keys:', Object.keys(formData));
+      console.log('Selected template:', selectedTemplate);
+      
+      // Använd server-side PDF-generering
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          formData,
+          selectedTemplate,
+        }),
+      });
 
-        console.log('API response status:', response.status);
-        console.log('API response ok:', response.ok);
+      console.log('API response status:', response.status);
+      console.log('API response ok:', response.ok);
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('API error response:', errorText);
-          throw new Error('Kunde inte generera PDF');
-        }
-
-        const result = await response.json();
-        console.log('API result:', result);
-        
-        if (result.success) {
-          console.log('HTML generation successful!');
-          console.log('HTML base64 length:', result.htmlBase64.length);
-          
-          // Dekodera HTML från base64
-          const html = atob(result.htmlBase64);
-          console.log('Decoded HTML length:', html.length);
-          
-          // Skapa en enkel div med HTML:en från servern
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = html;
-          tempDiv.style.position = 'absolute';
-          tempDiv.style.left = '-9999px';
-          tempDiv.style.top = '-9999px';
-          tempDiv.style.width = '800px';
-          tempDiv.style.backgroundColor = 'white';
-          document.body.appendChild(tempDiv);
-          
-          // Vänta lite så att DOM:en renderas
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          try {
-            // Använd html2pdf.js med enkla inställningar
-            const html2pdf = (await import('html2pdf.js')).default;
-            
-            const opt = {
-              margin: 10,
-              image: { type: 'jpeg', quality: 0.98 },
-              html2canvas: { scale: 2 },
-              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            const pdfDataUri = await html2pdf().set(opt).from(tempDiv).output('datauristring');
-            const base64 = pdfDataUri.split(',')[1];
-            
-            console.log('Generated PDF base64 length:', base64.length);
-            console.log('PDF base64 preview:', base64.substring(0, 100) + '...');
-            
-            document.body.removeChild(tempDiv);
-            resolve(base64);
-          } catch (pdfError) {
-            console.error('PDF conversion error:', pdfError);
-            document.body.removeChild(tempDiv);
-            
-            // Fallback till en enkel placeholder
-            const fallbackBase64 = btoa('PDF content placeholder - error occurred');
-            console.log('Using fallback, length:', fallbackBase64.length);
-            resolve(fallbackBase64);
-          }
-        } else {
-          throw new Error(result.error || 'Kunde inte generera PDF');
-        }
-        
-      } catch (error) {
-        console.error('PDF generation error:', error);
-        // Fallback till en enkel placeholder
-        const fallbackBase64 = btoa('PDF content placeholder - error occurred');
-        resolve(fallbackBase64);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API error response:', errorText);
+        throw new Error('Kunde inte generera PDF');
       }
-    });
+
+      // Hämta PDF som arrayBuffer och konvertera till base64
+      const pdfBuffer = await response.arrayBuffer();
+      
+      if (pdfBuffer.byteLength === 0) {
+        throw new Error('PDF är tom');
+      }
+      
+      console.log('PDF generated successfully, size:', pdfBuffer.byteLength, 'bytes');
+      
+      // Konvertera ArrayBuffer till base64
+      const uint8Array = new Uint8Array(pdfBuffer);
+      const base64 = btoa(String.fromCharCode(...uint8Array));
+      
+      console.log('Generated PDF base64 length:', base64.length);
+      console.log('PDF base64 preview:', base64.substring(0, 100) + '...');
+      
+      return base64;
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      throw error;
+    }
   };
 
   // --- SMTP via Misshosting ---
