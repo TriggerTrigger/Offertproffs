@@ -295,51 +295,81 @@ export async function POST(req: Request) {
          ` : ''}
 
          <!-- Betalningsvillkor -->
-         ${formData.paymentTerms ? `
+         ${(formData.paymentMethod || formData.paymentDueDate || formData.lateInterestRate || formData.paymentReference) ? `
            <div class="delivery-section">
              <h3>Betalningsvillkor</h3>
-             <div class="ai-text">
-               ${formData.paymentTerms}
+             <div class="delivery-grid">
+               ${formData.paymentMethod ? `
+                 <div class="delivery-item">
+                   <p class="label">Betalningsmetod:</p>
+                   <p>${formData.paymentMethod}</p>
+                 </div>
+               ` : ''}
+               ${formData.paymentDueDate ? `
+                 <div class="delivery-item">
+                   <p class="label">Förfallotid:</p>
+                   <p>${formData.paymentDueDate}</p>
+                 </div>
+               ` : ''}
+               ${formData.lateInterestRate ? `
+                 <div class="delivery-item">
+                   <p class="label">Dröjsmålsränta:</p>
+                   <p>${formData.lateInterestRate}</p>
+                 </div>
+               ` : ''}
+               ${formData.paymentReference ? `
+                 <div class="delivery-item">
+                   <p class="label">Betalningsreferens:</p>
+                   <p>${formData.paymentReference}</p>
+                 </div>
+               ` : ''}
              </div>
            </div>
          ` : ''}
 
          <!-- ROT/RUT-avdrag -->
-         ${formData.rotRutDeduction ? `
+         ${(formData.rotDeduction || formData.rutDeduction) ? `
            <div class="delivery-section">
              <h3>ROT/RUT-avdrag</h3>
              <div class="ai-text">
-               ${formData.rotRutDeduction}
+               ${formData.rotDeduction ? 'ROT-avdrag gäller (50% på arbetskostnad)' : ''}
+               ${formData.rotDeduction && formData.rutDeduction ? '<br>' : ''}
+               ${formData.rutDeduction ? 'RUT-avdrag gäller (50% på arbetskostnad)' : ''}
+               ${formData.deductionInfo ? `<br><br>${formData.deductionInfo}` : ''}
              </div>
            </div>
          ` : ''}
 
          <!-- Tilläggsinformation -->
-         ${formData.additionalInfo ? `
+         ${(formData.warranties || formData.additionalTerms || formData.specialNotes) ? `
            <div class="delivery-section">
              <h3>Tilläggsinformation</h3>
              <div class="ai-text">
-               ${formData.additionalInfo}
+               ${formData.warranties ? `<strong>Garantier:</strong><br>${formData.warranties}<br><br>` : ''}
+               ${formData.additionalTerms ? `<strong>Övriga villkor:</strong><br>${formData.additionalTerms}<br><br>` : ''}
+               ${formData.specialNotes ? `<strong>Särskilda anmärkningar:</strong><br>${formData.specialNotes}` : ''}
              </div>
            </div>
          ` : ''}
 
          <!-- Kontaktuppgifter för frågor -->
-         ${formData.contactForQuestions ? `
+         ${(formData.contactPersonQuestions || formData.contactPhoneQuestions || formData.contactEmailQuestions) ? `
            <div class="delivery-section">
              <h3>Kontaktuppgifter för frågor</h3>
              <div class="ai-text">
-               ${formData.contactForQuestions}
+               ${formData.contactPersonQuestions ? `<strong>Kontaktperson:</strong> ${formData.contactPersonQuestions}<br>` : ''}
+               ${formData.contactPhoneQuestions ? `<strong>Telefon:</strong> ${formData.contactPhoneQuestions}<br>` : ''}
+               ${formData.contactEmailQuestions ? `<strong>E-post:</strong> ${formData.contactEmailQuestions}` : ''}
              </div>
            </div>
          ` : ''}
 
-         <!-- Villkor -->
-         ${formData.terms ? `
+         <!-- Övriga villkor -->
+         ${formData.otherTerms ? `
            <div class="delivery-section">
-             <h3>Villkor</h3>
+             <h3>Övriga villkor</h3>
              <div class="ai-text">
-               ${formData.terms}
+               ${formData.otherTerms}
              </div>
            </div>
          ` : ''}
