@@ -127,10 +127,18 @@ export default function FeedbackAdminPage() {
           </div>
                      <button
              onClick={async () => {
+               console.log('Button clicked, setting isRefreshing to true');
                setIsRefreshing(true);
                try {
+                 console.log('Calling fetchFeedback...');
                  await fetchFeedback(false);
+                 console.log('fetchFeedback completed');
+                 // Lägg till en liten fördröjning så loading-staten syns
+                 await new Promise(resolve => setTimeout(resolve, 500));
+               } catch (error) {
+                 console.error('Error in button click:', error);
                } finally {
+                 console.log('Setting isRefreshing to false');
                  setIsRefreshing(false);
                }
              }}
