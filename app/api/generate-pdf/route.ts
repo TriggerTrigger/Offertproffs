@@ -84,7 +84,8 @@ export async function POST(req: Request) {
       </html>
     `;
 
-    const pdfRes = await fetch("https://din-pdf-server-url.com/generate", {
+    const pdfRes = await fetch("https://pdf-server-production-66e0.up.railway.app/generate", {
+
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ html })
