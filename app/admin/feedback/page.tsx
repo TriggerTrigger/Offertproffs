@@ -16,6 +16,7 @@ interface Feedback {
 export default function FeedbackAdminPage() {
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -35,8 +36,10 @@ export default function FeedbackAdminPage() {
     return () => clearInterval(interval);
   }, [router]);
 
-  const fetchFeedback = async () => {
-    setIsLoading(true);
+  const fetchFeedback = async (showLoading = true) => {
+    if (showLoading) {
+      setIsLoading(true);
+    }
     setError('');
     
     try {
@@ -50,7 +53,9 @@ export default function FeedbackAdminPage() {
     } catch (error) {
       setError('Ett fel uppstod');
     } finally {
-      setIsLoading(false);
+      if (showLoading) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -113,18 +118,22 @@ export default function FeedbackAdminPage() {
             <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
           </div>
           <button
-            onClick={fetchFeedback}
-            disabled={isLoading}
+            onClick={async () => {
+              setIsRefreshing(true);
+              await fetchFeedback(false);
+              setIsRefreshing(false);
+            }}
+            disabled={isRefreshing}
             className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
           >
-            {isLoading ? (
+            {isRefreshing ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             ) : (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
             )}
-            <span>{isLoading ? 'Uppdaterar...' : 'Uppdatera'}</span>
+            <span>{isRefreshing ? 'Uppdaterar...' : 'Uppdatera'}</span>
           </button>
         </div>
 
