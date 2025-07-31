@@ -20,6 +20,8 @@ export default function FeedbackAdminPage() {
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [forceUpdate, setForceUpdate] = useState(0);
   const [renderKey, setRenderKey] = useState(0);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [componentKey, setComponentKey] = useState(0);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -44,6 +46,11 @@ export default function FeedbackAdminPage() {
     console.log('Feedback updated:', feedback.length, 'items');
   }, [feedback]);
 
+  // Force re-render när refreshTrigger ändras
+  useEffect(() => {
+    console.log('Refresh trigger updated:', refreshTrigger);
+  }, [refreshTrigger]);
+
     const fetchFeedback = async (showLoading = true) => {
     if (showLoading) {
       setIsLoading(true);
@@ -56,10 +63,12 @@ export default function FeedbackAdminPage() {
              if (response.ok) {
          const data = await response.json();
          console.log('Fetched feedback:', data.feedback.length, 'items');
-         setFeedback(data.feedback);
+         setFeedback([...data.feedback]); // Force new array reference
          setLastUpdate(new Date());
          setForceUpdate(prev => prev + 1);
          setRenderKey(prev => prev + 1);
+         setRefreshTrigger(prev => prev + 1);
+         setComponentKey(prev => prev + 1);
          console.log('Force update set to:', forceUpdate + 1);
        } else {
         setError('Kunde inte hämta feedback');
@@ -123,8 +132,8 @@ export default function FeedbackAdminPage() {
     );
   }
 
-  return (
-    <div key={renderKey} className="min-h-screen bg-gray-50 py-8">
+     return (
+     <div key={componentKey} className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8 flex justify-between items-center">
                      <div>
@@ -160,7 +169,7 @@ export default function FeedbackAdminPage() {
         </div>
 
                  {stats && (
-           <div key={renderKey} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+           <div key={refreshTrigger} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Totalt antal svar</h3>
               <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
@@ -222,7 +231,7 @@ export default function FeedbackAdminPage() {
           </div>
           
                      <div className="overflow-x-auto">
-             <table key={renderKey} className="min-w-full divide-y divide-gray-200">
+             <table key={refreshTrigger} className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
@@ -235,7 +244,7 @@ export default function FeedbackAdminPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                                  {feedback.map((item) => (
-                   <tr key={`${item.id}-${renderKey}`} className="hover:bg-gray-50">
+                   <tr key={`${item.id}-${refreshTrigger}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.createdAt).toLocaleDateString('sv-SE')}
                     </td>
