@@ -27,6 +27,19 @@ export default function FeedbackAdminPage() {
       router.push('/');
       return;
     }
+    
+    // Kontrollera att det är admin som är inloggad
+    try {
+      const user = JSON.parse(userData);
+      if (user.email !== 'info@offertproffs.nu') {
+        router.push('/');
+        return;
+      }
+    } catch (error) {
+      router.push('/');
+      return;
+    }
+    
     fetchFeedback();
     const interval = setInterval(() => fetchFeedback(false), 30000);
     return () => clearInterval(interval);
