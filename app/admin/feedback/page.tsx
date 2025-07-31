@@ -37,20 +37,28 @@ export default function FeedbackAdminPage() {
   }, [router]);
 
   const fetchFeedback = async (showLoading = true) => {
+    console.log('fetchFeedback called, showLoading:', showLoading);
+    
     if (showLoading) {
       setIsLoading(true);
     }
     setError('');
     
     try {
+      console.log('Fetching feedback...');
       const response = await fetch('/api/admin/feedback');
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Feedback data:', data);
         setFeedback(data.feedback);
       } else {
+        console.error('Response not ok:', response.status);
         setError('Kunde inte hämta feedback');
       }
     } catch (error) {
+      console.error('Fetch error:', error);
       setError('Ett fel uppstod');
     } finally {
       if (showLoading) {
@@ -117,15 +125,18 @@ export default function FeedbackAdminPage() {
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Feedback Översikt</h1>
             <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
           </div>
-          <button
-            onClick={async () => {
-              setIsRefreshing(true);
-              await fetchFeedback(false);
-              setIsRefreshing(false);
-            }}
-            disabled={isRefreshing}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
-          >
+                     <button
+             onClick={async () => {
+               setIsRefreshing(true);
+               try {
+                 await fetchFeedback(false);
+               } finally {
+                 setIsRefreshing(false);
+               }
+             }}
+             disabled={isRefreshing}
+             className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
+           >
             {isRefreshing ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             ) : (
