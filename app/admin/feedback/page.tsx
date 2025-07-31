@@ -25,6 +25,7 @@ export default function FeedbackAdminPage() {
   const [timestamp, setTimestamp] = useState(Date.now());
   const [refreshCount, setRefreshCount] = useState(0);
   const [updateTrigger, setUpdateTrigger] = useState(0);
+  const [finalTrigger, setFinalTrigger] = useState(0);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -64,12 +65,19 @@ export default function FeedbackAdminPage() {
     console.log('Feedback state changed:', feedback.length, 'items');
     // Force re-render genom att uppdatera en state
     setRefreshCount(prev => prev + 1);
+    // Force re-render genom att uppdatera updateTrigger
+    setUpdateTrigger(prev => prev + 1);
   }, [feedback]);
 
   // Force re-render när updateTrigger ändras
   useEffect(() => {
     console.log('Update trigger changed:', updateTrigger);
   }, [updateTrigger]);
+
+  // Force re-render när finalTrigger ändras
+  useEffect(() => {
+    console.log('Final trigger changed:', finalTrigger);
+  }, [finalTrigger]);
 
     const fetchFeedback = async (showLoading = true) => {
     if (showLoading) {
@@ -92,6 +100,7 @@ export default function FeedbackAdminPage() {
          setTimestamp(Date.now());
          setRefreshCount(prev => prev + 1);
          setUpdateTrigger(prev => prev + 1);
+         setFinalTrigger(prev => prev + 1);
          console.log('Force update set to:', forceUpdate + 1);
        } else {
         setError('Kunde inte hämta feedback');
@@ -156,7 +165,7 @@ export default function FeedbackAdminPage() {
   }
 
      return (
-     <div key={updateTrigger} className="min-h-screen bg-gray-50 py-8">
+     <div key={finalTrigger} className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8 flex justify-between items-center">
                      <div>
