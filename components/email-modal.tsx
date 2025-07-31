@@ -70,7 +70,7 @@ ${formData.companyName}`
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API error response:', errorText);
-        throw new Error('Kunde inte generera PDF');
+        throw new Error(`Kunde inte generera PDF: ${response.status} ${response.statusText}`);
       }
 
       // Hämta PDF som arrayBuffer och konvertera till base64
@@ -93,7 +93,7 @@ ${formData.companyName}`
       
     } catch (error) {
       console.error('PDF generation error:', error);
-      throw error;
+      throw new Error(`PDF-generering misslyckades: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
@@ -184,13 +184,14 @@ ${formData.companyName}`
     } catch (error) {
       console.error('EmailJS error:', error);
       setSendStatus('error');
+      alert(`E-postfel: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setIsSending(false);
     }
   };
 
   // Välj vilken funktion som ska användas (byt här för att växla mellan SMTP och EmailJS)
-  const sendEmail = sendEmailSMTP; // Byt till sendEmailJS för att använda EmailJS
+  const sendEmail = sendEmailJS; // Byt till sendEmailJS för att använda EmailJS
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
