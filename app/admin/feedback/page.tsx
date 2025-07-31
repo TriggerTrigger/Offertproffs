@@ -19,6 +19,7 @@ export default function FeedbackAdminPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [forceUpdate, setForceUpdate] = useState(0);
+  const [renderKey, setRenderKey] = useState(0);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -38,6 +39,11 @@ export default function FeedbackAdminPage() {
     return () => clearInterval(interval);
   }, [router]);
 
+  // Force re-render när feedback ändras
+  useEffect(() => {
+    console.log('Feedback updated:', feedback.length, 'items');
+  }, [feedback]);
+
     const fetchFeedback = async (showLoading = true) => {
     if (showLoading) {
       setIsLoading(true);
@@ -49,9 +55,12 @@ export default function FeedbackAdminPage() {
       
              if (response.ok) {
          const data = await response.json();
+         console.log('Fetched feedback:', data.feedback.length, 'items');
          setFeedback(data.feedback);
          setLastUpdate(new Date());
          setForceUpdate(prev => prev + 1);
+         setRenderKey(prev => prev + 1);
+         console.log('Force update set to:', forceUpdate + 1);
        } else {
         setError('Kunde inte hämta feedback');
       }
@@ -115,7 +124,7 @@ export default function FeedbackAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div key={renderKey} className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8 flex justify-between items-center">
                      <div>
@@ -151,7 +160,7 @@ export default function FeedbackAdminPage() {
         </div>
 
                  {stats && (
-           <div key={forceUpdate} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+           <div key={renderKey} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">Totalt antal svar</h3>
               <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
@@ -213,7 +222,7 @@ export default function FeedbackAdminPage() {
           </div>
           
                      <div className="overflow-x-auto">
-             <table key={forceUpdate} className="min-w-full divide-y divide-gray-200">
+             <table key={renderKey} className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
@@ -226,7 +235,7 @@ export default function FeedbackAdminPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                                  {feedback.map((item) => (
-                   <tr key={`${item.id}-${forceUpdate}`} className="hover:bg-gray-50">
+                   <tr key={`${item.id}-${renderKey}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.createdAt).toLocaleDateString('sv-SE')}
                     </td>
