@@ -15,9 +15,7 @@ export default function EmailModal({ formData, selectedTemplate, onClose }: Emai
     subject: `Offert ${formData.quoteNumber} från ${formData.companyName}`,
          message: `Hej ${formData.customerName || 'kund'},
 
-Tack för ditt intresse! Vi har skapat en offert för dig (${formData.quoteNumber}).
-
-Offerten kan laddas ner från vår webbplats eller skickas separat.
+Tack för ditt intresse! Bifogat finner du vår offert ${formData.quoteNumber}.
 
 Vid frågor är du välkommen att kontakta oss.
 
@@ -226,7 +224,7 @@ ${formData.companyName}`
   };
 
   // Välj vilken funktion som ska användas (byt här för att växla mellan SMTP och EmailJS)
-  const sendEmail = sendEmailJS; // Byt till sendEmailJS för att använda EmailJS
+  const sendEmail = sendEmailSMTP; // Byt till sendEmailSMTP för att använda vår egen server
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -328,7 +326,7 @@ ${formData.companyName}`
               </div>
                              <div className="ml-3">
                  <p className="text-sm text-blue-700">
-                   E-postmeddelandet skickas utan PDF-bilaga. PDF:en kan laddas ner separat.
+                   Offerten kommer att bifogas som PDF-fil automatiskt.
                  </p>
                </div>
             </div>
