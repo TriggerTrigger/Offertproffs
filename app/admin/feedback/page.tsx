@@ -17,6 +17,7 @@ export default function FeedbackAdminPage() {
   const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -49,11 +50,14 @@ export default function FeedbackAdminPage() {
       const response = await fetch('/api/admin/feedback');
       console.log('Response status:', response.status);
       
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Feedback data:', data);
-        setFeedback(data.feedback);
-      } else {
+             if (response.ok) {
+         const data = await response.json();
+         console.log('Feedback data:', data);
+         console.log('Setting feedback with', data.feedback.length, 'items');
+         setFeedback(data.feedback);
+         setLastUpdate(new Date());
+         console.log('Feedback state updated at', new Date().toLocaleTimeString());
+       } else {
         console.error('Response not ok:', response.status);
         setError('Kunde inte hämta feedback');
       }
@@ -121,10 +125,11 @@ export default function FeedbackAdminPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Feedback Översikt</h1>
-            <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
-          </div>
+                     <div>
+             <h1 className="text-3xl font-bold text-gray-800 mb-2">Feedback Översikt</h1>
+             <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
+             <p className="text-sm text-gray-500">Senast uppdaterad: {lastUpdate.toLocaleTimeString()}</p>
+           </div>
                      <button
              onClick={async () => {
                console.log('Button clicked, setting isRefreshing to true');
