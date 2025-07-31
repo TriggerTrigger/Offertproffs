@@ -133,7 +133,11 @@ ${formData.companyName}`
         }),
       });
 
-      if (!res.ok) throw new Error('Kunde inte skicka e-post');
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Email API error:', errorText);
+        throw new Error(`Kunde inte skicka e-post: ${res.status} ${res.statusText}`);
+      }
 
       setSendStatus('success');
 
@@ -146,7 +150,20 @@ ${formData.companyName}`
       }, 2000);
 
     } catch (err) {
+      console.error('Email sending error:', err);
       setSendStatus('error');
+      
+      // Visa specifikt felmeddelande
+      let errorMessage = 'Ett fel uppstod vid skickandet. Försök igen.';
+      if (err instanceof Error) {
+        errorMessage = `E-postfel: ${err.message}`;
+      } else if (typeof err === 'string') {
+        errorMessage = `E-postfel: ${err}`;
+      } else if (err && typeof err === 'object') {
+        errorMessage = `E-postfel: ${JSON.stringify(err)}`;
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsSending(false);
     }
