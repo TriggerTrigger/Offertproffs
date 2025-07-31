@@ -59,108 +59,91 @@ export async function POST(req: Request) {
              display: flex;
              justify-content: space-between;
              align-items: flex-start;
-             margin-bottom: 40px;
-             padding: 30px;
-             border-radius: 15px;
-             background: linear-gradient(135deg, ${colors.bg} 0%, ${colors.primary}15 100%);
-             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-             border: 1px solid ${colors.primary}20;
+             margin-bottom: 32px;
+             padding: 20px;
+             border-radius: 10px;
+             background-color: ${colors.bg};
            }
                      .company-info h1 {
              color: ${colors.primary};
-             font-size: 28px;
+             font-size: 30px;
              font-weight: 700;
-             margin-bottom: 15px;
-             text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+             margin-bottom: 8px;
            }
                      .company-info p {
-             margin: 4px 0;
-             color: #555;
-             font-size: 13px;
+             margin: 2px 0;
+             color: #666;
+             font-size: 14px;
            }
                      .offer-info h2 {
              color: ${colors.primary};
              font-size: 24px;
              font-weight: 700;
-             margin-bottom: 10px;
-             text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+             margin-bottom: 8px;
            }
                      .offer-info p {
-             margin: 4px 0;
-             color: #555;
-             font-size: 13px;
+             margin: 2px 0;
+             color: #666;
+             font-size: 14px;
            }
                      .customer-section h3 {
              color: ${colors.secondary};
              font-size: 18px;
              font-weight: 600;
-             margin-bottom: 15px;
-             border-bottom: 2px solid ${colors.secondary};
-             padding-bottom: 5px;
+             margin-bottom: 12px;
            }
                      .customer-section p {
-             margin: 4px 0;
-             color: #2c3e50;
+             margin: 2px 0;
+             color: #374151;
              font-size: 14px;
            }
                      .ai-text {
-             margin: 25px 0;
-             padding: 20px;
+             margin: 32px 0;
+             padding: 16px;
              background-color: #f9f9f9;
-             border-radius: 10px;
+             border-radius: 8px;
              white-space: pre-wrap;
            }
                      table {
              width: 100%;
              border-collapse: collapse;
-             margin: 25px 0;
+             margin: 32px 0;
              font-size: 14px;
-             border-radius: 10px;
-             overflow: hidden;
-             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
            }
            th {
-             background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%);
+             background-color: ${colors.primary};
              color: white;
-             padding: 15px 12px;
+             padding: 12px;
              text-align: left;
              font-weight: 600;
              font-size: 14px;
-             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
            }
            td {
-             padding: 15px 12px;
+             padding: 12px;
              border-bottom: 1px solid #e9ecef;
              vertical-align: top;
-             transition: background-color 0.2s;
            }
            tr:nth-child(even) {
-             background-color: #f8f9fa;
-           }
-           tr:hover {
-             background-color: #e3f2fd;
+             background-color: #f9f9f9;
            }
                      .total-section {
-             margin-top: 30px;
+             margin-top: 16px;
              text-align: right;
            }
                      .total-box {
              display: inline-block;
-             padding: 20px 30px;
-             border-radius: 15px;
-             background: linear-gradient(135deg, ${colors.bg} 0%, ${colors.primary}15 100%);
-             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-             border: 2px solid ${colors.primary}30;
+             padding: 16px;
+             border-radius: 8px;
+             background-color: ${colors.bg};
            }
                      .total-amount {
              color: ${colors.primary};
-             font-size: 22px;
+             font-size: 20px;
              font-weight: 700;
-             text-shadow: 0 1px 2px rgba(0,0,0,0.1);
            }
                      .delivery-section {
-             margin-top: 40px;
-             padding-top: 20px;
+             margin-top: 32px;
+             padding-top: 24px;
              border-top: 1px solid #eee;
            }
                      .delivery-section h3 {
