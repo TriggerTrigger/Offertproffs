@@ -3,10 +3,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import FeedbackModal from './feedback-modal';
 
 export default function Header() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -41,6 +43,12 @@ export default function Header() {
           
           <div className="flex items-center space-x-4">
             <button
+              onClick={() => setShowFeedback(true)}
+              className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
+            >
+              Feedback
+            </button>
+            <button
               onClick={() => router.push('/valj-mall')}
               className="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100"
             >
@@ -55,6 +63,11 @@ export default function Header() {
           </div>
         </div>
       </div>
+      
+      <FeedbackModal 
+        isOpen={showFeedback} 
+        onClose={() => setShowFeedback(false)} 
+      />
     </div>
   );
 }
