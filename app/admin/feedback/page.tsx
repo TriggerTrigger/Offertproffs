@@ -37,32 +37,23 @@ export default function FeedbackAdminPage() {
     return () => clearInterval(interval);
   }, [router]);
 
-  const fetchFeedback = async (showLoading = true) => {
-    console.log('fetchFeedback called, showLoading:', showLoading);
-    
+    const fetchFeedback = async (showLoading = true) => {
     if (showLoading) {
       setIsLoading(true);
     }
     setError('');
     
     try {
-      console.log('Fetching feedback...');
       const response = await fetch('/api/admin/feedback');
-      console.log('Response status:', response.status);
       
-             if (response.ok) {
-         const data = await response.json();
-         console.log('Feedback data:', data);
-         console.log('Setting feedback with', data.feedback.length, 'items');
-         setFeedback(data.feedback);
-         setLastUpdate(new Date());
-         console.log('Feedback state updated at', new Date().toLocaleTimeString());
-       } else {
-        console.error('Response not ok:', response.status);
+      if (response.ok) {
+        const data = await response.json();
+        setFeedback(data.feedback);
+        setLastUpdate(new Date());
+      } else {
         setError('Kunde inte hämta feedback');
       }
     } catch (error) {
-      console.error('Fetch error:', error);
       setError('Ett fel uppstod');
     } finally {
       if (showLoading) {
@@ -132,18 +123,14 @@ export default function FeedbackAdminPage() {
            </div>
                      <button
              onClick={async () => {
-               console.log('Button clicked, setting isRefreshing to true');
                setIsRefreshing(true);
                try {
-                 console.log('Calling fetchFeedback...');
                  await fetchFeedback(false);
-                 console.log('fetchFeedback completed');
                  // Lägg till en liten fördröjning så loading-staten syns
                  await new Promise(resolve => setTimeout(resolve, 500));
                } catch (error) {
-                 console.error('Error in button click:', error);
+                 // Tyst error handling
                } finally {
-                 console.log('Setting isRefreshing to false');
                  setIsRefreshing(false);
                }
              }}
