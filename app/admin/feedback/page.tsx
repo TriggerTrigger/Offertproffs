@@ -51,14 +51,20 @@ export default function FeedbackAdminPage() {
     try {
       // Lägg till cache-busting parameter
       const response = await fetch(`/api/admin/feedback?t=${Date.now()}`);
+      console.log('=== DEBUG: Frontend fetch response ===');
+      console.log('Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Response data:', data);
         setFeedback(data.feedback);
         setLastUpdate(new Date());
       } else {
+        console.log('Response not ok:', response.statusText);
         setError('Kunde inte hämta feedback');
       }
     } catch (error) {
+      console.error('Fetch error:', error);
       setError('Ett fel uppstod');
     } finally {
       if (showLoading) setIsLoading(false);
