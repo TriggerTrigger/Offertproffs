@@ -15,8 +15,9 @@ function updateTimestamp(filePath, description) {
     
     // Ersätt gammal kommentar eller lägg till ny
     if (content.includes('FORCE UPDATE:')) {
+      // Hantera både {{/* */}} och {/* */}
       content = content.replace(
-        /\/\* FORCE UPDATE:.*?\*\//,
+        /{{?\/\* FORCE UPDATE:.*?\*\/}}?/,
         newComment
       );
     } else {
