@@ -194,6 +194,7 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
         
         // Ladda bara sparade data om användaren har fyllt i något (PUSH THIS TO LIVE)
         // NYA TEST-ANVÄNDARE SKA HA TOMMA FÄLT - DENNA ÄNDRING MÅSTE DEPLOYAS - VERSION 2
+        // DEPLOY FIX: Kontrollera att nya test-användare startar med tomma fält
         if (hasCompanyData) {
           setFormData(prev => ({
             ...prev,
