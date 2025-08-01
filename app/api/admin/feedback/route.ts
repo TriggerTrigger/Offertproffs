@@ -17,10 +17,18 @@ export async function GET(req: Request) {
     console.log(`Found ${feedback.length} feedback items`);
     console.log('Feedback data:', feedback);
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       feedback
     });
+
+    // Lägg till headers för att förhindra caching
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    response.headers.set('Surrogate-Control', 'no-store');
+
+    return response;
 
   } catch (error) {
     console.error('Feedback fetch error:', error);
