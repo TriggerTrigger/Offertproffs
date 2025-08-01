@@ -68,7 +68,11 @@ export default function FeedbackAdminPage() {
         console.log('Setting feedback with:', data.feedback.length, 'items');
         
         // Force state update med ny array
-        setFeedback([...data.feedback]);
+        setFeedback(prevFeedback => {
+          console.log('=== DEBUG: Previous feedback length:', prevFeedback.length);
+          console.log('=== DEBUG: New feedback length:', data.feedback.length);
+          return [...data.feedback];
+        });
         setLastUpdate(new Date());
         setRenderKey(prev => prev + 1);
         
@@ -109,6 +113,10 @@ export default function FeedbackAdminPage() {
   };
 
   const stats = calculateStats();
+
+  // Debug: Logga vad som renderas
+  console.log('=== DEBUG: Rendering with feedback count:', feedback.length);
+  console.log('=== DEBUG: Stats:', stats);
 
   if (isLoading) {
     return (
