@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Metadata } from 'next';
+import AutoRefreshWrapper from './auto-refresh-wrapper';
 
 const prisma = new PrismaClient();
 
@@ -61,15 +62,7 @@ export default async function FeedbackAdminPage() {
   const stats = calculateStats();
 
   return (
-    <>
-      <script dangerouslySetInnerHTML={{
-        __html: `
-          // Auto-refresh every 30 seconds
-          setTimeout(function() {
-            window.location.reload();
-          }, 30000);
-        `
-      }} />
+    <AutoRefreshWrapper>
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-8 flex justify-between items-center">
@@ -223,6 +216,6 @@ export default async function FeedbackAdminPage() {
           </div>
         </div>
       </div>
-    </>
+    </AutoRefreshWrapper>
   );
 } 
