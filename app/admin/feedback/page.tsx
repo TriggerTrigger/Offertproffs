@@ -1,7 +1,6 @@
-'use client';
+import { PrismaClient } from '@prisma/client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+const prisma = new PrismaClient();
 
 interface Feedback {
   id: string;
@@ -9,62 +8,27 @@ interface Feedback {
   pdfWorks: boolean;
   looksProfessional: boolean;
   wouldRecommend: boolean;
-  additionalComments?: string;
-  createdAt: string;
+  additionalComments?: string | null;
+  createdAt: Date;
 }
 
-export default function FeedbackAdminPage() {
-  const [feedback, setFeedback] = useState<Feedback[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [error, setError] = useState('');
-  const router = useRouter();
-
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (!userData) {
-      router.push('/');
-      return;
-    }
-    
-    // Kontrollera att det är admin som är inloggad
-    try {
-      const user = JSON.parse(userData);
-      if (user.email !== 'info@offertproffs.nu') {
-        router.push('/');
-        return;
+// Server-side data fetching
+async function getFeedbackData(): Promise<Feedback[]> {
+  try {
+    const feedback = await prisma.feedback.findMany({
+      orderBy: {
+        createdAt: 'desc'
       }
-    } catch (error) {
-      router.push('/');
-      return;
-    }
-    
-    fetchFeedback();
-    const interval = setInterval(() => fetchFeedback(false), 30000);
-    return () => clearInterval(interval);
-  }, [router]);
+    });
+    return feedback;
+  } catch (error) {
+    console.error('Error fetching feedback:', error);
+    return [];
+  }
+}
 
-  const fetchFeedback = async (showLoading = true) => {
-    if (showLoading) setIsLoading(true);
-    setError('');
-    try {
-      const response = await fetch(`/api/admin/feedback?t=${Date.now()}`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        setFeedback(data.feedback);
-        setLastUpdate(new Date());
-      } else {
-        setError('Kunde inte hämta feedback');
-      }
-    } catch (error) {
-      console.error('Fetch error:', error);
-      setError('Ett fel uppstod');
-    } finally {
-      if (showLoading) setIsLoading(false);
-    }
-  };
+export default async function FeedbackAdminPage() {
+  const feedback = await getFeedbackData();
 
   const calculateStats = () => {
     if (feedback.length === 0) return null;
@@ -91,31 +55,6 @@ export default function FeedbackAdminPage() {
 
   const stats = calculateStats();
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Laddar feedback...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {error}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
@@ -123,32 +62,17 @@ export default function FeedbackAdminPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Feedback Översikt</h1>
             <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
-            <p className="text-sm text-gray-500">Senast uppdaterad: {lastUpdate.toLocaleTimeString()}</p>
+            <p className="text-sm text-gray-500">Senast uppdaterad: {new Date().toLocaleTimeString()}</p>
           </div>
-          <button
-            onClick={async () => {
-              setIsRefreshing(true);
-              try {
-                await fetchFeedback(false);
-                await new Promise(resolve => setTimeout(resolve, 500));
-              } catch (error) {
-                // Tyst error handling
-              } finally {
-                setIsRefreshing(false);
-              }
-            }}
-            disabled={isRefreshing}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
+          <a
+            href="/admin/feedback"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
           >
-            {isRefreshing ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            )}
-            <span>{isRefreshing ? 'Uppdaterar...' : 'Uppdatera'}</span>
-          </button>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Uppdatera</span>
+          </a>
         </div>
 
         {stats && (
