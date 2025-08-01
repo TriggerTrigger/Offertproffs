@@ -5,12 +5,17 @@ const prisma = new PrismaClient();
 
 export async function GET(req: Request) {
   try {
+    console.log('=== DEBUG: Feedback API called ===');
+    
     // Hämta all feedback sorterad efter datum (nyaste först)
     const feedback = await prisma.feedback.findMany({
       orderBy: {
         createdAt: 'desc'
       }
     });
+
+    console.log(`Found ${feedback.length} feedback items`);
+    console.log('Feedback data:', feedback);
 
     return NextResponse.json({
       success: true,
