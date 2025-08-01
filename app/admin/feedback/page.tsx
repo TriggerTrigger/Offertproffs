@@ -29,10 +29,7 @@ async function getFeedbackData(): Promise<Feedback[]> {
 }
 
 export const metadata: Metadata = {
-  title: 'Feedback Admin',
-  other: {
-    'refresh': '30'
-  }
+  title: 'Feedback Admin'
 };
 
 export default async function FeedbackAdminPage() {
@@ -65,9 +62,14 @@ export default async function FeedbackAdminPage() {
 
   return (
     <>
-      <head>
-        <meta httpEquiv="refresh" content="30" />
-      </head>
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          // Auto-refresh every 30 seconds
+          setTimeout(function() {
+            window.location.reload();
+          }, 30000);
+        `
+      }} />
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4">
           <div className="mb-8 flex justify-between items-center">
