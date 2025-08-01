@@ -194,6 +194,7 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
         
         // DEPLOY FIX: Kontrollera att nya test-användare startar med tomma fält
         // VERSION 3 - Deployment fix
+        // TEST DEPLOYMENT - Kontrollera att Vercel fungerar nu
         if (hasCompanyData) {
           setFormData(prev => ({
             ...prev,
