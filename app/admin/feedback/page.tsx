@@ -20,6 +20,7 @@ export default function FeedbackAdminPage() {
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [error, setError] = useState('');
   const [renderKey, setRenderKey] = useState(0);
+  const [forceUpdate, setForceUpdate] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -45,6 +46,12 @@ export default function FeedbackAdminPage() {
     const interval = setInterval(() => fetchFeedback(false), 30000);
     return () => clearInterval(interval);
   }, [router]);
+
+  // Force re-render när feedback ändras
+  useEffect(() => {
+    console.log('=== DEBUG: Feedback changed, forcing re-render ===');
+    setForceUpdate(prev => prev + 1);
+  }, [feedback]);
 
   const fetchFeedback = async (showLoading = true) => {
     if (showLoading) setIsLoading(true);
@@ -129,7 +136,7 @@ export default function FeedbackAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div key={forceUpdate} className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8 flex justify-between items-center">
           <div>
