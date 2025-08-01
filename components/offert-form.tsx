@@ -181,33 +181,24 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
       setFormData(prev => ({ ...prev, ...parsed }));
     }
     
-    // Load user data from login - bara om användaren har sparade uppgifter
+    // Load user data from login
     const userData = localStorage.getItem('user');
     if (userData) {
       try {
         const user = JSON.parse(userData);
-        
-        // Kontrollera om användaren har några sparade företagsuppgifter
-        const hasCompanyData = user.companyName || user.companyStreet || user.companyPhone || 
-                              user.companyEmail || user.companyOrgNr || user.companyVatNr ||
-                              user.companyWebsite || user.companyBankAccount;
-        
-        // Ladda bara sparade data om användaren har fyllt i något (FIXED - NEW USERS START EMPTY)
-        if (hasCompanyData) {
-          setFormData(prev => ({
-            ...prev,
-            companyName: user.companyName || prev.companyName,
-            companyStreet: user.companyStreet || prev.companyStreet,
-            companyPostalCode: user.companyPostalCode || prev.companyPostalCode,
-            companyCity: user.companyCity || prev.companyCity,
-            companyPhone: user.companyPhone || prev.companyPhone,
-            companyEmail: user.companyEmail || prev.companyEmail,
-            companyOrgNr: user.companyOrgNr || prev.companyOrgNr,
-            companyVatNr: user.companyVatNr || prev.companyVatNr,
-            companyWebsite: user.companyWebsite || prev.companyWebsite,
-            companyBankAccount: user.companyBankAccount || prev.companyBankAccount,
-          }));
-        }
+        setFormData(prev => ({
+          ...prev,
+          companyName: user.companyName || prev.companyName,
+          companyStreet: user.companyStreet || prev.companyStreet,
+          companyPostalCode: user.companyPostalCode || prev.companyPostalCode,
+          companyCity: user.companyCity || prev.companyCity,
+          companyPhone: user.companyPhone || prev.companyPhone,
+          companyEmail: user.companyEmail || prev.companyEmail,
+          companyOrgNr: user.companyOrgNr || prev.companyOrgNr,
+          companyVatNr: user.companyVatNr || prev.companyVatNr,
+          companyWebsite: user.companyWebsite || prev.companyWebsite,
+          companyBankAccount: user.companyBankAccount || prev.companyBankAccount,
+        }));
       } catch (error) {
         console.error('Fel vid laddning av användardata:', error);
       }
