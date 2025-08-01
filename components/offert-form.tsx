@@ -211,6 +211,12 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
         console.log('Has company data:', hasCompanyData);
         console.log('========================');
         
+        // Rensa localStorage om användaren inte har företagsdata
+        if (!hasCompanyData) {
+          console.log('=== DEBUG: Rensar localStorage companyData ===');
+          localStorage.removeItem('companyData');
+        }
+        
         // DEPLOY FIX: Kontrollera att nya test-användare startar med tomma fält
         // VERSION 3 - Deployment fix
         // TEST DEPLOYMENT - Kontrollera att Vercel fungerar nu
