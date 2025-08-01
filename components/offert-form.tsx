@@ -192,7 +192,7 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
                               user.companyEmail || user.companyOrgNr || user.companyVatNr ||
                               user.companyWebsite || user.companyBankAccount;
         
-        // Ladda bara sparade data om användaren har fyllt i något (FIXED)
+        // Ladda bara sparade data om användaren har fyllt i något (FIXED - NEW USERS START EMPTY)
         if (hasCompanyData) {
           setFormData(prev => ({
             ...prev,
