@@ -176,13 +176,18 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
   // Load saved data on mount
   useEffect(() => {
     const savedData = localStorage.getItem('companyData');
+    console.log('=== DEBUG: localStorage companyData ===');
+    console.log('Saved company data:', savedData);
     if (savedData) {
       const parsed = JSON.parse(savedData);
+      console.log('Parsed company data:', parsed);
       setFormData(prev => ({ ...prev, ...parsed }));
     }
     
     // Load user data from login - bara om användaren har sparade uppgifter
     const userData = localStorage.getItem('user');
+    console.log('=== DEBUG: localStorage userData ===');
+    console.log('User data:', userData);
     if (userData) {
       try {
         const user = JSON.parse(userData);
