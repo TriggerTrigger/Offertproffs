@@ -192,6 +192,14 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
                               user.companyEmail || user.companyOrgNr || user.companyVatNr ||
                               user.companyWebsite || user.companyBankAccount;
         
+        // DEBUG: Logga användardata för att se vad som händer
+        console.log('=== DEBUG: Användardata ===');
+        console.log('User email:', user.email);
+        console.log('Company name:', user.companyName);
+        console.log('Company phone:', user.companyPhone);
+        console.log('Has company data:', hasCompanyData);
+        console.log('========================');
+        
         // DEPLOY FIX: Kontrollera att nya test-användare startar med tomma fält
         // VERSION 3 - Deployment fix
         // TEST DEPLOYMENT - Kontrollera att Vercel fungerar nu
