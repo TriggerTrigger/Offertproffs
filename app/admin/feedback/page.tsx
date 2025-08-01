@@ -285,7 +285,7 @@ export default function FeedbackAdminPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {feedback.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
+                  <tr key={item.id + '-' + (item._timestamp ?? '')} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.createdAt).toLocaleDateString('sv-SE')}
                     </td>
