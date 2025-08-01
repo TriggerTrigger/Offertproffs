@@ -11,6 +11,7 @@ interface Feedback {
   wouldRecommend: boolean;
   additionalComments?: string;
   createdAt: string;
+  _timestamp?: number;
 }
 
 export default function FeedbackAdminPage() {
@@ -71,7 +72,14 @@ export default function FeedbackAdminPage() {
         setFeedback(prevFeedback => {
           console.log('=== DEBUG: Previous feedback length:', prevFeedback.length);
           console.log('=== DEBUG: New feedback length:', data.feedback.length);
-          return [...data.feedback];
+          
+          // Lägg till timestamp för att garantera unikhet
+          const feedbackWithTimestamp = data.feedback.map((item: any) => ({
+            ...item,
+            _timestamp: Date.now()
+          }));
+          
+          return feedbackWithTimestamp;
         });
         setLastUpdate(new Date());
         setRenderKey(prev => prev + 1);
