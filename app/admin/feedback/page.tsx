@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { Metadata } from 'next';
+import RefreshButton from './refresh-button';
 
 const prisma = new PrismaClient();
 
@@ -80,12 +81,7 @@ export default async function FeedbackAdminPage() {
               </svg>
               <span>Uppdatera</span>
             </a>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
-            >
-              Force Refresh
-            </button>
+            <RefreshButton />
           </div>
         </div>
 
