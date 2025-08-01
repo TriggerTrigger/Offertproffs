@@ -11,7 +11,6 @@ interface Feedback {
   wouldRecommend: boolean;
   additionalComments?: string;
   createdAt: string;
-  _timestamp?: number;
 }
 
 export default function FeedbackAdminPage() {
@@ -20,8 +19,6 @@ export default function FeedbackAdminPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [error, setError] = useState('');
-  const [renderKey, setRenderKey] = useState(0);
-  const [forceUpdate, setForceUpdate] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,45 +45,17 @@ export default function FeedbackAdminPage() {
     return () => clearInterval(interval);
   }, [router]);
 
-  // Force re-render när feedback ändras
-  useEffect(() => {
-    console.log('=== DEBUG: Feedback changed, forcing re-render ===');
-    setForceUpdate(prev => prev + 1);
-  }, [feedback]);
-
   const fetchFeedback = async (showLoading = true) => {
     if (showLoading) setIsLoading(true);
     setError('');
     try {
-      // Lägg till cache-busting parameter
       const response = await fetch(`/api/admin/feedback?t=${Date.now()}`);
-      console.log('=== DEBUG: Frontend fetch response ===');
-      console.log('Response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Response data:', data);
-        console.log('Setting feedback with:', data.feedback.length, 'items');
-        
-        // Force state update med ny array
-        setFeedback(prevFeedback => {
-          console.log('=== DEBUG: Previous feedback length:', prevFeedback.length);
-          console.log('=== DEBUG: New feedback length:', data.feedback.length);
-          
-          // Lägg till timestamp för att garantera unikhet
-          const feedbackWithTimestamp = data.feedback.map((item: any, index: number) => ({
-            ...item,
-            _timestamp: Date.now() + index
-          }));
-          
-          return feedbackWithTimestamp;
-        });
+        setFeedback(data.feedback);
         setLastUpdate(new Date());
-        setRenderKey(prev => prev + 1);
-        
-        console.log('State updated, feedback count:', data.feedback.length);
       } else {
-        console.log('Response not ok:', response.statusText);
         setError('Kunde inte hämta feedback');
       }
     } catch (error) {
@@ -122,10 +91,6 @@ export default function FeedbackAdminPage() {
 
   const stats = calculateStats();
 
-  // Debug: Logga vad som renderas
-  console.log('=== DEBUG: Rendering with feedback count:', feedback.length);
-  console.log('=== DEBUG: Stats:', stats);
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
@@ -152,7 +117,7 @@ export default function FeedbackAdminPage() {
   }
 
   return (
-    <div key={forceUpdate} className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8 flex justify-between items-center">
           <div>
@@ -183,29 +148,6 @@ export default function FeedbackAdminPage() {
               </svg>
             )}
             <span>{isRefreshing ? 'Uppdaterar...' : 'Uppdatera'}</span>
-          </button>
-          <button
-            onClick={async () => {
-              setIsRefreshing(true);
-              try {
-                // Force refresh med ny timestamp
-                const response = await fetch(`/api/admin/feedback?t=${Date.now()}&force=1`);
-                if (response.ok) {
-                  const data = await response.json();
-                  setFeedback(data.feedback);
-                  setLastUpdate(new Date());
-                }
-                await new Promise(resolve => setTimeout(resolve, 500));
-              } catch (error) {
-                // Tyst error handling
-              } finally {
-                setIsRefreshing(false);
-              }
-            }}
-            disabled={isRefreshing}
-            className="ml-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg"
-          >
-            Force Refresh
           </button>
         </div>
 
@@ -272,7 +214,7 @@ export default function FeedbackAdminPage() {
           </div>
           
           <div className="overflow-x-auto">
-            <table key={renderKey} className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
@@ -285,7 +227,7 @@ export default function FeedbackAdminPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {feedback.map((item) => (
-                  <tr key={item.id + '-' + (item._timestamp ?? '')} className="hover:bg-gray-50">
+                  <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {new Date(item.createdAt).toLocaleDateString('sv-SE')}
                     </td>
