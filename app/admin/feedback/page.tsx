@@ -70,6 +70,7 @@ export default async function FeedbackAdminPage() {
             <p className="text-gray-600">Se vad användarna tycker om OffertProffs</p>
             <p className="text-sm text-gray-500">Senast uppdaterad: {new Date().toLocaleTimeString()}</p>
             <p className="text-xs text-gray-400">Klicka "Uppdatera" för att se senaste data</p>
+            {/* FORCE UPDATE: Ändra denna kommentar för att tvinga deployment */}
           </div>
           <div className="flex space-x-2">
             <a
