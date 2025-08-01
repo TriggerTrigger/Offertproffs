@@ -19,6 +19,7 @@ export default function FeedbackAdminPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const [error, setError] = useState('');
+  const [renderKey, setRenderKey] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -57,8 +58,14 @@ export default function FeedbackAdminPage() {
       if (response.ok) {
         const data = await response.json();
         console.log('Response data:', data);
-        setFeedback(data.feedback);
+        console.log('Setting feedback with:', data.feedback.length, 'items');
+        
+        // Force state update med ny array
+        setFeedback([...data.feedback]);
         setLastUpdate(new Date());
+        setRenderKey(prev => prev + 1);
+        
+        console.log('State updated, feedback count:', data.feedback.length);
       } else {
         console.log('Response not ok:', response.statusText);
         setError('Kunde inte hämta feedback');
@@ -242,7 +249,7 @@ export default function FeedbackAdminPage() {
           </div>
           
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table key={renderKey} className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
