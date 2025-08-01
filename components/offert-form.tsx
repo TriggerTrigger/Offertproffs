@@ -188,9 +188,15 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
         const user = JSON.parse(userData);
         
         // Kontrollera om användaren har några sparade företagsuppgifter
-        const hasCompanyData = user.companyName || user.companyStreet || user.companyPhone || 
-                              user.companyEmail || user.companyOrgNr || user.companyVatNr ||
-                              user.companyWebsite || user.companyBankAccount;
+        // Förbättrad logik: kolla att det är meningsfull data, inte bara en bokstav
+        const hasCompanyData = (user.companyName && user.companyName.trim().length > 2) || 
+                              (user.companyStreet && user.companyStreet.trim().length > 2) || 
+                              (user.companyPhone && user.companyPhone.trim().length > 5) || 
+                              (user.companyEmail && user.companyEmail.trim().length > 5) || 
+                              (user.companyOrgNr && user.companyOrgNr.trim().length > 5) || 
+                              (user.companyVatNr && user.companyVatNr.trim().length > 5) ||
+                              (user.companyWebsite && user.companyWebsite.trim().length > 5) || 
+                              (user.companyBankAccount && user.companyBankAccount.trim().length > 5);
         
         // DEBUG: Logga användardata för att se vad som händer
         console.log('=== DEBUG: Användardata ===');
