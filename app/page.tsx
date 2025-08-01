@@ -113,12 +113,6 @@ export default function LoginPage() {
             >
               {isLoading ? 'Loggar in...' : 'Logga in'}
             </button>
-            
-            <div className="text-sm text-gray-500 mt-4">
-              <p>Testa med:</p>
-              <p>Email: info@offertproffs.nu</p>
-              <p>Lösenord: test123</p>
-            </div>
           </div>
         </div>
       </div>
