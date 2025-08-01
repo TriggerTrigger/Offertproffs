@@ -49,7 +49,8 @@ export default function FeedbackAdminPage() {
     if (showLoading) setIsLoading(true);
     setError('');
     try {
-      const response = await fetch('/api/admin/feedback');
+      // Lägg till cache-busting parameter
+      const response = await fetch(`/api/admin/feedback?t=${Date.now()}`);
       if (response.ok) {
         const data = await response.json();
         setFeedback(data.feedback);
@@ -146,6 +147,29 @@ export default function FeedbackAdminPage() {
               </svg>
             )}
             <span>{isRefreshing ? 'Uppdaterar...' : 'Uppdatera'}</span>
+          </button>
+          <button
+            onClick={async () => {
+              setIsRefreshing(true);
+              try {
+                // Force refresh med ny timestamp
+                const response = await fetch(`/api/admin/feedback?t=${Date.now()}&force=1`);
+                if (response.ok) {
+                  const data = await response.json();
+                  setFeedback(data.feedback);
+                  setLastUpdate(new Date());
+                }
+                await new Promise(resolve => setTimeout(resolve, 500));
+              } catch (error) {
+                // Tyst error handling
+              } finally {
+                setIsRefreshing(false);
+              }
+            }}
+            disabled={isRefreshing}
+            className="ml-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg"
+          >
+            Force Refresh
           </button>
         </div>
 
