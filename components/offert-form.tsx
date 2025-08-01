@@ -177,8 +177,6 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
   useEffect(() => {
     // Load user data from login - bara om användaren har sparade uppgifter
     const userData = localStorage.getItem('user');
-    console.log('=== DEBUG: localStorage userData ===');
-    console.log('User data:', userData);
     
     if (userData) {
       try {
@@ -195,17 +193,8 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
                               (user.companyWebsite && user.companyWebsite.trim().length > 5) || 
                               (user.companyBankAccount && user.companyBankAccount.trim().length > 5);
         
-        // DEBUG: Logga användardata för att se vad som händer
-        console.log('=== DEBUG: Användardata ===');
-        console.log('User email:', user.email);
-        console.log('Company name:', user.companyName);
-        console.log('Company phone:', user.companyPhone);
-        console.log('Has company data:', hasCompanyData);
-        console.log('========================');
-        
         // Rensa localStorage om användaren inte har företagsdata
         if (!hasCompanyData) {
-          console.log('=== DEBUG: Rensar localStorage companyData ===');
           localStorage.removeItem('companyData');
         }
         
@@ -232,11 +221,8 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
     
     // Ladda localStorage data EFTER att vi har kontrollerat användardata
     const savedData = localStorage.getItem('companyData');
-    console.log('=== DEBUG: localStorage companyData ===');
-    console.log('Saved company data:', savedData);
     if (savedData) {
       const parsed = JSON.parse(savedData);
-      console.log('Parsed company data:', parsed);
       setFormData(prev => ({ ...prev, ...parsed }));
     }
     
