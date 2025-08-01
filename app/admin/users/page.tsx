@@ -44,7 +44,6 @@ export default function UsersAdminPage() {
     setIsLoading(true);
     setError('');
     try {
-      // Lägg till cache-busting parameter
       const response = await fetch(`/api/admin/users?t=${Date.now()}`);
       if (response.ok) {
         const data = await response.json();
