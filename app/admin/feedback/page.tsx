@@ -74,9 +74,9 @@ export default function FeedbackAdminPage() {
           console.log('=== DEBUG: New feedback length:', data.feedback.length);
           
           // Lägg till timestamp för att garantera unikhet
-          const feedbackWithTimestamp = data.feedback.map((item: any) => ({
+          const feedbackWithTimestamp = data.feedback.map((item: any, index: number) => ({
             ...item,
-            _timestamp: Date.now()
+            _timestamp: Date.now() + index
           }));
           
           return feedbackWithTimestamp;
