@@ -73,7 +73,7 @@ export default async function FeedbackAdminPage() {
           </div>
           <div className="flex space-x-2">
             <a
-              href="/admin/feedback"
+              href={`/admin/feedback?t=${Date.now()}`}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
