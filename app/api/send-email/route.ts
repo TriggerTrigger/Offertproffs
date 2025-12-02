@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
@@ -30,14 +33,32 @@ export async function POST(req: Request) {
       },
     });
 
+    // Hämta företagarens sparade kontaktadress (företagsprofil)
+    let replyToAddress = process.env.EMAIL_USER;
+
+    if (userEmail && typeof userEmail === 'string') {
+      try {
+        const user = await prisma.user.findUnique({
+          where: { email: userEmail.trim().toLowerCase() },
+        });
+
+        if (user) {
+          // Använd företagets sparade e-post om den finns, annars använd användarens e-post
+          replyToAddress = user.companyEmail || user.email || replyToAddress;
+        }
+      } catch (profileError) {
+        console.error('Kunde inte hämta användarprofil för replyTo:', profileError);
+      }
+    }
+
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to,
       subject,
       text: message,
       html: `<p>${message.replace(/\n/g, '<br>')}</p>`,
-      // Svar från kunden går till den inloggade företagaren om möjligt
-      replyTo: userEmail && typeof userEmail === 'string' ? userEmail : process.env.EMAIL_USER,
+      // Svar från kunden går till företagets sparade kontaktadress
+      replyTo: replyToAddress,
 
       attachments: pdfBase64
         ? [
