@@ -35,8 +35,7 @@ export default function LoginPage() {
       if (response.ok) {
         // Spara användardata i localStorage
         localStorage.setItem('user', JSON.stringify(data.user));
-        const isAdmin = data.user?.email === 'info@offertproffs.nu';
-        router.push(isAdmin ? '/admin/users' : '/valj-mall');
+        router.push('/valj-mall');
       } else {
         setError(data.error || 'Inloggning misslyckades');
       }
