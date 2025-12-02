@@ -98,6 +98,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 placeholder="E-postadress"
+                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyPress={handleKeyPress}
