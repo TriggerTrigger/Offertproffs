@@ -511,7 +511,7 @@ export default function OffertForm({ selectedTemplate }: OffertFormProps) {
           />
           <input
             type="email"
-            placeholder="E-postadress *"
+            placeholder="E-post för kundsvar *"
             value={formData.companyEmail}
             onChange={(e) => handleInputChange('companyEmail', e.target.value)}
             className={`px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none ${!formData.companyEmail ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
