@@ -18,6 +18,15 @@ export async function POST(req: Request) {
       );
     }
 
+    // Temporär spärr: endast admin-kontot är öppet under arbetet
+    const allowedEmail = 'info@offertproffs.nu';
+    if (normalizedEmail !== allowedEmail) {
+      return NextResponse.json(
+        { error: 'Just nu är bara admin-kontot aktivt medan vi uppdaterar systemet.' },
+        { status: 403 }
+      );
+    }
+
     // Hitta användaren
     let user = await prisma.user.findUnique({
       where: { email: normalizedEmail }
