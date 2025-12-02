@@ -53,7 +53,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center">
+    <div className="min-h-screen relative flex flex-col items-center justify-center px-4 text-center">
       {/* Bakgrundsbild */}
       <div className="absolute inset-0 z-0">
         <div className="relative w-full h-full">
@@ -66,6 +66,13 @@ export default function LoginPage() {
           />
           <div className="absolute inset-0 bg-black bg-opacity-50"></div>
         </div>
+      </div>
+
+      {/* Huvudrubrik */}
+      <div className="relative z-10 mb-8 max-w-2xl">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white drop-shadow-md">
+          OffertProffs.nu – Sälj mer. Skriv mindre.
+        </h1>
       </div>
 
       {/* Login Box */}
