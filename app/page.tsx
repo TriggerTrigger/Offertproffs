@@ -74,7 +74,9 @@ export default function LoginPage() {
           {/* Logotyp */}
           <div>
             <h1 className="text-4xl font-bold text-gray-800 mb-2">OffertProffs</h1>
-            <p className="text-gray-600">Professionell Offertplattform</p>
+            <p className="text-gray-600">
+              Skapa konto eller logga in direkt – endast e-post & lösenord
+            </p>
           </div>
 
           {/* Login Form */}
@@ -111,8 +113,11 @@ export default function LoginPage() {
               disabled={isLoading}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-70"
             >
-              {isLoading ? 'Loggar in...' : 'Logga in'}
+              {isLoading ? 'Startar...' : 'Starta OffertProffs'}
             </button>
+            <p className="text-sm text-gray-500">
+              Inga verifieringsmejl behövs – ditt konto skapas automatiskt första gången.
+            </p>
           </div>
         </div>
       </div>
