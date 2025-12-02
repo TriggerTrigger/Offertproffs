@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
 interface EmailModalProps {
@@ -24,6 +24,21 @@ ${formData.companyName}`
   });
   const [isSending, setIsSending] = useState(false);
   const [sendStatus, setSendStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        if (parsed?.email && typeof parsed.email === 'string') {
+          setUserEmail(parsed.email);
+        }
+      }
+    } catch (e) {
+      console.error('Kunde inte läsa inloggad användare från localStorage:', e);
+    }
+  }, []);
 
   // Hjälpfunktioner för färger och beräkningar
   const getTemplateColors = (template: string) => {
@@ -136,6 +151,7 @@ ${formData.companyName}`
           to: emailData.to,
           subject: emailData.subject,
           message: emailData.message,
+          userEmail,
           pdfBase64,
           pdfFileName: `offert-${formData.quoteNumber}.pdf`,
         }),
