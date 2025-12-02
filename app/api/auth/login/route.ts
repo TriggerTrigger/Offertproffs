@@ -18,6 +18,14 @@ export async function POST(req: Request) {
       );
     }
 
+    // Enkel e-postvalidering
+    if (!normalizedEmail.includes('@')) {
+      return NextResponse.json(
+        { error: 'Ogiltig e-postadress' },
+        { status: 400 }
+      );
+    }
+
     // Hitta användaren
     let user = await prisma.user.findUnique({
       where: { email: normalizedEmail }
