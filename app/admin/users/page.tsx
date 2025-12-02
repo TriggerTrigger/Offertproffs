@@ -9,6 +9,7 @@ interface User {
   companyName?: string;
   firstLoginDate?: string;
   testPeriodEnd?: string;
+  isKeeper?: boolean;
   createdAt: string;
 }
 
@@ -139,6 +140,38 @@ export default function UsersAdminPage() {
     }
   };
 
+  const handleToggleKeeper = async (userId: string, currentKeeperStatus: boolean) => {
+    try {
+      const userData = localStorage.getItem('user');
+      const adminEmail =
+        userData && (() => {
+          try {
+            const parsed = JSON.parse(userData);
+            return parsed?.email as string | undefined;
+          } catch {
+            return undefined;
+          }
+        })();
+
+      const response = await fetch(`/api/admin/users/${userId}/keeper`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isKeeper: !currentKeeperStatus, adminEmail }),
+      });
+
+      if (response.ok) {
+        await fetchUsers(); // Uppdatera listan
+      } else {
+        const data = await response.json().catch(() => null);
+        setError(data?.error || 'Kunde inte uppdatera keeper-flaggan');
+      }
+    } catch {
+      setError('Ett fel uppstod vid uppdatering av keeper-flaggan');
+    }
+  };
+
   const calculateDaysLeft = (testPeriodEnd?: string) => {
     if (!testPeriodEnd) return null;
     const endDate = new Date(testPeriodEnd);
@@ -246,6 +279,7 @@ export default function UsersAdminPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Test-period slutar</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dagar kvar</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spara (Keeper)</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Åtgärder</th>
                 </tr>
               </thead>
@@ -290,6 +324,15 @@ export default function UsersAdminPage() {
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColor}`}>
                           {status}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <input
+                          type="checkbox"
+                          checked={user.isKeeper || false}
+                          onChange={() => handleToggleKeeper(user.id, user.isKeeper || false)}
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded cursor-pointer"
+                          title={user.isKeeper ? 'Användaren är skyddad från radering' : 'Klicka för att skydda användaren från radering'}
+                        />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div className="flex space-x-2">
