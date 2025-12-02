@@ -24,6 +24,7 @@ model User {
     companyBankAccount String?
     firstLoginDate DateTime?
     testPeriodEnd DateTime?
+    isKeeper  Boolean  @default(false)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
