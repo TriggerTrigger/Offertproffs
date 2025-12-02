@@ -91,8 +91,9 @@ export async function POST(req: Request) {
 
   } catch (error) {
     console.error('Login error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Okänt fel';
     return NextResponse.json(
-      { error: 'Ett fel uppstod vid inloggning' },
+      { error: `Ett fel uppstod vid inloggning: ${errorMessage}` },
       { status: 500 }
     );
   }
