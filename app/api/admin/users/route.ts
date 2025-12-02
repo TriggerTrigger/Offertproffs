@@ -18,6 +18,7 @@ export async function GET(req: Request) {
         companyName: true,
         firstLoginDate: true,
         testPeriodEnd: true,
+        isKeeper: true,
         createdAt: true
       }
     });
@@ -84,11 +85,13 @@ export async function DELETE(req: Request) {
       });
     }
 
+    // Radera endast användare som INTE är keepers
     const result = await prisma.user.deleteMany({
       where: {
         id: {
           in: idsToDelete,
         },
+        isKeeper: false, // SÄKERHETSKONTROLL: Radera INTE om isKeeper är true
       },
     });
 
