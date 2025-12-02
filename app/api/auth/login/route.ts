@@ -18,15 +18,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Temporär spärr: endast specifika konton är öppna under arbetet
-    const allowedEmails = ['info@offertproffs.nu', 'linden_david@hotmail.com'];
-    if (!allowedEmails.includes(normalizedEmail)) {
-      return NextResponse.json(
-        { error: 'Just nu är endast utvalda konton aktiva medan vi uppdaterar systemet.' },
-        { status: 403 }
-      );
-    }
-
     // Hitta användaren
     let user = await prisma.user.findUnique({
       where: { email: normalizedEmail }
