@@ -18,11 +18,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Temporär spärr: endast admin-kontot är öppet under arbetet
-    const allowedEmail = 'info@offertproffs.nu';
-    if (normalizedEmail !== allowedEmail) {
+    // Temporär spärr: endast specifika konton är öppna under arbetet
+    const allowedEmails = ['info@offertproffs.nu', 'linden_david@hotmail.com'];
+    if (!allowedEmails.includes(normalizedEmail)) {
       return NextResponse.json(
-        { error: 'Just nu är bara admin-kontot aktivt medan vi uppdaterar systemet.' },
+        { error: 'Just nu är endast utvalda konton aktiva medan vi uppdaterar systemet.' },
         { status: 403 }
       );
     }
