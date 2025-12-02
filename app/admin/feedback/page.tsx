@@ -2,6 +2,9 @@ import { PrismaClient } from '@prisma/client';
 import { Metadata } from 'next';
 import RefreshButton from './refresh-button';
 
+// Gör sidan helt dynamisk så att ny feedback alltid syns direkt
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 interface Feedback {
