@@ -16,6 +16,8 @@ export default function UsersAdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export default function UsersAdminPage() {
       if (response.ok) {
         const data = await response.json();
         setUsers(data.users);
+        setSelectedUserIds([]);
       } else {
         setError('Kunde inte hämta användare');
       }
@@ -55,6 +58,64 @@ export default function UsersAdminPage() {
       setError('Ett fel uppstod');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const toggleUserSelection = (userId: string) => {
+    setSelectedUserIds((prev) =>
+      prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
+    );
+  };
+
+  const isAllSelected = users.length > 0 && selectedUserIds.length === users.length;
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedUserIds([]);
+    } else {
+      setSelectedUserIds(users.map((u) => u.id));
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedUserIds.length === 0) return;
+
+    const confirmDelete = window.confirm(
+      `Är du säker på att du vill radera ${selectedUserIds.length} användare?`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      setIsDeleting(true);
+      const userData = localStorage.getItem('user');
+      const adminEmail =
+        userData && (() => {
+          try {
+            const parsed = JSON.parse(userData);
+            return parsed?.email as string | undefined;
+          } catch {
+            return undefined;
+          }
+        })();
+
+      const response = await fetch('/api/admin/users', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userIds: selectedUserIds, adminEmail }),
+      });
+
+      if (response.ok) {
+        await fetchUsers();
+      } else {
+        const data = await response.json().catch(() => null);
+        setError(data?.error || 'Kunde inte radera användare');
+      }
+    } catch {
+      setError('Ett fel uppstod vid radering av användare');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -133,16 +194,33 @@ export default function UsersAdminPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Test-användare</h1>
-          <p className="text-gray-600">Hantera test-perioder för användare</p>
-          {/* FORCE UPDATE: Users Admin - 2025-08-01 15:32:49 */}
-          <button
-            onClick={fetchUsers}
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
-          >
-            Uppdatera lista
-          </button>
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Test-användare</h1>
+            <p className="text-gray-600">Hantera test-perioder för användare</p>
+            {/* FORCE UPDATE: Users Admin - 2025-08-01 15:32:49 */}
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={fetchUsers}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+            >
+              Uppdatera lista
+            </button>
+            <button
+              onClick={handleDeleteSelected}
+              disabled={isDeleting || selectedUserIds.length === 0}
+              className={`px-4 py-2 rounded-lg text-white ${
+                isDeleting || selectedUserIds.length === 0
+                  ? 'bg-red-300 cursor-not-allowed'
+                  : 'bg-red-600 hover:bg-red-700'
+              }`}
+            >
+              {isDeleting
+                ? 'Raderar...'
+                : `Radera valda (${selectedUserIds.length})`}
+            </button>
+          </div>
         </div>
 
         <div className="bg-white rounded-lg shadow">
@@ -154,6 +232,14 @@ export default function UsersAdminPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={isAllSelected}
+                      onChange={toggleSelectAll}
+                      className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                    />
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Företag</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Första inlogg</th>
@@ -171,6 +257,14 @@ export default function UsersAdminPage() {
                   
                   return (
                     <tr key={user.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <input
+                          type="checkbox"
+                          checked={selectedUserIds.includes(user.id)}
+                          onChange={() => toggleUserSelection(user.id)}
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {user.email}
                       </td>
