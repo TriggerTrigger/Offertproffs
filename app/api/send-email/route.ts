@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 
 export async function POST(req: Request) {
   try {
-    const { to, subject, message, pdfBase64, pdfFileName } = await req.json();
+    const { to, subject, message, pdfBase64, pdfFileName, userEmail } = await req.json();
 
     // Validera PDF base64
     if (pdfBase64 && typeof pdfBase64 === 'string') {
@@ -36,6 +36,8 @@ export async function POST(req: Request) {
       subject,
       text: message,
       html: `<p>${message.replace(/\n/g, '<br>')}</p>`,
+      // Svar från kunden går till den inloggade företagaren om möjligt
+      replyTo: userEmail && typeof userEmail === 'string' ? userEmail : process.env.EMAIL_USER,
 
       attachments: pdfBase64
         ? [
